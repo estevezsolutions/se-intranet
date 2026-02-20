@@ -14,29 +14,25 @@
   </header>
 
   <aside id="sidebar">
-    <ul>
-      <li onclick="mostrarDepartamento('direccion')">Dirección</li>
-      <li onclick="mostrarDepartamento('economia')">Economía</li>
-      <li onclick="mostrarDepartamento('produccion')">Producción</li>
-      <li onclick="mostrarDepartamento('comercial')">Comercial</li>
-      <li onclick="mostrarDepartamento('rrhh')">Recursos Humanos</li>
-    </ul>
+    <ul id="sidebarMenu"></ul>
   </aside>
 
   <main>
+    <!-- LOGIN -->
     <div id="loginDiv">
       <input type="email" id="email" placeholder="Correo electrónico">
       <input type="password" id="password" placeholder="Contraseña">
       <button onclick="login()">Entrar</button>
     </div>
 
+    <!-- CONTENIDO PRINCIPAL -->
     <div id="contenidoDiv" style="display:none;">
       <h3>Bienvenido, <span id="usuarioNombre"></span></h3>
       <div id="documentosDiv"></div>
     </div>
   </main>
 
-  <!-- Chat flotante -->
+  <!-- CHAT FLOTANTE -->
   <div id="chatButton" onclick="abrirChat()">💬<span id="chatBadge">0</span></div>
   <div id="chatDiv">
     <div id="chatHeader">

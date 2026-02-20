@@ -2,8 +2,8 @@ import { auth, db } from './firebase-config.js';
 import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-// Roles y departamentos
-const departamentosUsuario = {
+// Usuarios y roles
+const rolesUsuarios = {
   "arquitecto@sestevez.com": "admin",
   "administrador@sestevez.com": "direccion",
   "secretaria@sestevez.com": "direccion",
@@ -21,7 +21,7 @@ window.login = async function() {
   try {
     await signInWithEmailAndPassword(auth, email, password);
     const nombre = email.split('@')[0];
-    document.getElementById("usuarioNombre").textContent = nombre;
+    document.getElementById("bienvenida").textContent = `Bienvenido, ${nombre}`;
 
     document.getElementById("loginDiv").style.display = "none";
     document.getElementById("contenidoDiv").style.display = "block";
@@ -38,7 +38,7 @@ window.login = async function() {
 function configurarMenu(email){
   const menu = document.getElementById("sidebarMenu");
   menu.innerHTML = "";
-  const depUsuario = departamentosUsuario[email];
+  const rol = rolesUsuarios[email];
 
   const departamentos = {
     direccion: "Dirección",
@@ -49,17 +49,17 @@ function configurarMenu(email){
   };
 
   for(const key in departamentos){
-    if(depUsuario==="admin" || depUsuario===key){
+    if(rol==="admin" || rol===key){
       const li=document.createElement("li");
       li.textContent=departamentos[key];
-      li.onclick=()=>{ irADepartamento(key, depUsuario); };
+      li.onclick=()=>{ irADepartamento(key, rol); };
       menu.appendChild(li);
     }
   }
 }
 
-function irADepartamento(depto, depUsuario){
-  if(depUsuario==="admin" || depUsuario===depto){
+function irADepartamento(depto, rol){
+  if(rol==="admin" || rol===depto){
     window.location.href=`departamentos/${depto}.html`;
   }else{
     alert("No tienes permiso para acceder a este departamento.");

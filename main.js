@@ -80,20 +80,24 @@ if(menuToggle && sidebar) {
 
 function cargarMenuLateral(){
   const departamentos = ["Direccion","Economia","Produccion","Comercial","RecursosHumanos"];
-  if(!sidebarMenu) return;
   sidebarMenu.innerHTML = "";
+
   departamentos.forEach(depto => {
     const li = document.createElement("li");
     li.textContent = depto;
+
     li.addEventListener("click", () => {
-      // Ocultar todos los departamentos
-      ocultarDepartamentos();
-      // Mostrar solo el seleccionado
       const depDiv = document.getElementById("depto_" + depto.replace(/\s+/g,''));
-      if(depDiv) depDiv.style.display = "block";
-      // Ocultar menú lateral automáticamente
+
+      if(depDiv){
+        // Solo hacer scroll hacia el departamento
+        depDiv.scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Ocultar menú lateral en móvil
       sidebar.classList.remove("show");
     });
+
     sidebarMenu.appendChild(li);
   });
 }

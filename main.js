@@ -1,7 +1,7 @@
 // main.js
 import { auth, db } from './firebase-config.js';
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // ------------------- Elementos HTML -------------------
 const loginDiv = document.getElementById("loginDiv");
@@ -107,22 +107,28 @@ function ocultarDepartamentos(){
   deptos.forEach(d => d.style.display = "none");
 }
 
-// ------------------- Chat -------------------
+// ------------------- Chat estilo WhatsApp -------------------
 let chatListener;
+
 function initChat() {
   const q = query(collection(db,"chat"), orderBy("fecha"));
+  
   chatListener = onSnapshot(q, snapshot => {
     if(!chatMensajes) return;
     chatMensajes.innerHTML = "";
-    snapshot.forEach(doc => {
-      const data = doc.data();
+    
+    let unreadCount = 0; // contador de mensajes no leídos
+
+    snapshot.forEach(async docSnap => {
+      const data = docSnap.data();
       const fecha = data.fecha ? new Date(data.fecha.seconds*1000) : new Date();
       const hora = fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
       const fechaStr = fecha.toLocaleDateString();
 
       const mensajeDiv = document.createElement("div");
-      mensajeDiv.classList.add("mensaje");
+
       const esPropio = auth.currentUser && auth.currentUser.email === data.email;
+      mensajeDiv.classList.add("mensaje");
       mensajeDiv.classList.add(esPropio ? "mensaje-propio" : "mensaje-otro");
 
       // Burbuja estilo WhatsApp
@@ -130,25 +136,45 @@ function initChat() {
         <div class="burbuja">
           <div class="texto"><b>${data.nombre}</b>: ${data.mensaje}</div>
           <div class="hora">${fechaStr} ${hora}</div>
-          <div class="estado">${esPropio ? '<span class="punto rojo">•</span><span class="punto rojo">•</span>' : ''}</div>
+          <div class="estado">
+            ${esPropio 
+              ? `<span class="punto ${data.visto ? 'verde' : 'rojo'}">•</span>
+                 <span class="punto ${data.visto ? 'verde' : 'rojo'}">•</span>`
+              : ''}
+          </div>
         </div>
       `;
-      chatMensajes.appendChild(mensajeDiv);
-    });
-    chatMensajes.scrollTop = chatMensajes.scrollHeight;
 
+      chatMensajes.appendChild(mensajeDiv);
+
+      // 🔹 Marcar mensaje como leído si no es mío y actualizar Firestore
+      if(!esPropio && !data.visto){
+        unreadCount++;
+        await updateDoc(doc(db,"chat",docSnap.id), { visto: true });
+      }
+    });
+
+    // Actualizar burbuja de notificación
     const badge = document.getElementById("chatBadge");
-    if(badge) badge.textContent = snapshot.size;
+    if(badge){
+      badge.style.display = unreadCount ? "flex" : "none";
+      badge.textContent = unreadCount;
+    }
+
+    chatMensajes.scrollTop = chatMensajes.scrollHeight;
   });
 }
 
 window.abrirChat = () => { 
   if(chatDiv) chatDiv.style.display="flex"; 
 };
-window.cerrarChat = () => { if(chatDiv) chatDiv.style.display="none"; }
+window.cerrarChat = () => { 
+  if(chatDiv) chatDiv.style.display="none"; 
+};
 
 window.enviarMensaje = async () => {
   if(!chatInput || !chatInput.value.trim()) return;
+
   const mensajeTexto = chatInput.value.trim();
   const email = auth.currentUser.email;
   const nombres = {
@@ -170,5 +196,6 @@ window.enviarMensaje = async () => {
     entregado: true,
     visto: false
   });
+
   chatInput.value = "";
 };

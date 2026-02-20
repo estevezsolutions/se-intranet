@@ -1,7 +1,7 @@
 // main.js
 import { auth, db } from './firebase-config.js';
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // ------------------- Elementos HTML -------------------
 const loginDiv = document.getElementById("loginDiv");
@@ -88,10 +88,11 @@ function cargarMenuLateral(){
 
     li.addEventListener("click", () => {
       const depDiv = document.getElementById("depto_" + depto.replace(/\s+/g,''));
+
       if(depDiv){
         depDiv.scrollIntoView({ behavior: "smooth" });
       }
-      // Ocultar menú lateral en móvil
+
       sidebar.classList.remove("show");
     });
 
@@ -104,68 +105,58 @@ function ocultarDepartamentos(){
   deptos.forEach(d => d.style.display = "none");
 }
 
-// ------------------- Chat estilo WhatsApp -------------------
+// ------------------- Chat (funcional como WhatsApp) -------------------
 let chatListener;
-
 function initChat() {
   const q = query(collection(db,"chat"), orderBy("fecha"));
-
+  
   chatListener = onSnapshot(q, snapshot => {
     if(!chatMensajes) return;
     chatMensajes.innerHTML = "";
-    
-    let unreadCount = 0;
 
-    snapshot.forEach(async docSnap => {
-      const data = docSnap.data();
+    snapshot.forEach(doc => {
+      const data = doc.data();
       const fecha = data.fecha ? new Date(data.fecha.seconds*1000) : new Date();
       const hora = fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
       const fechaStr = fecha.toLocaleDateString();
 
       const mensajeDiv = document.createElement("div");
+      mensajeDiv.classList.add("mensaje");
 
       const esPropio = auth.currentUser && auth.currentUser.email === data.email;
-      mensajeDiv.classList.add("mensaje");
       mensajeDiv.classList.add(esPropio ? "mensaje-propio" : "mensaje-otro");
 
+      // Puntos de estado (rojo entregado, verde leído)
+      let puntosHTML = "";
+      if(esPropio){
+        puntosHTML = `<span class="punto ${data.visto ? 'verde' : 'rojo'}">•</span>
+                      <span class="punto ${data.visto ? 'verde' : 'rojo'}">•</span>`;
+      }
+
+      // Burbuja estilo WhatsApp
       mensajeDiv.innerHTML = `
-        <div class="burbuja ${esPropio ? 'propio' : 'otro'}">
+        <div class="burbuja">
           <div class="texto"><b>${data.nombre}</b>: ${data.mensaje}</div>
           <div class="hora">${fechaStr} ${hora}</div>
-          <div class="estado">
-            ${esPropio 
-              ? `<span class="punto ${data.visto ? 'verde' : 'rojo'}">•</span>
-                 <span class="punto ${data.visto ? 'verde' : 'rojo'}">•</span>`
-              : ''}
-          </div>
+          <div class="estado">${puntosHTML}</div>
         </div>
       `;
 
       chatMensajes.appendChild(mensajeDiv);
-      mensajeDiv.classList.add("fadeIn");
-
-      if(!esPropio && !data.visto){
-        unreadCount++;
-        await updateDoc(doc(db,"chat",docSnap.id), { visto: true });
-      }
     });
+
+    chatMensajes.scrollTop = chatMensajes.scrollHeight;
 
     const badge = document.getElementById("chatBadge");
-    if(badge){
-      badge.style.display = unreadCount ? "flex" : "none";
-      badge.textContent = unreadCount;
-    }
-
-    chatMensajes.scrollTo({
-      top: chatMensajes.scrollHeight,
-      behavior: 'smooth'
-    });
+    if(badge) badge.textContent = snapshot.size;
   });
 }
 
-window.abrirChat = () => { 
+window.abrirChat = async () => { 
   if(chatDiv) chatDiv.style.display="flex"; 
+  await marcarMensajesLeidos();
 };
+
 window.cerrarChat = () => { 
   if(chatDiv) chatDiv.style.display="none"; 
 };
@@ -186,14 +177,29 @@ window.enviarMensaje = async () => {
   };
   const nombre = nombres[email] || email.split("@")[0];
 
-  await addDoc(collection(db,"chat"), {
-    nombre,
-    email,
-    mensaje: mensajeTexto,
-    fecha: serverTimestamp(),
-    entregado: true,
-    visto: false
-  });
-
-  chatInput.value = "";
+  try {
+    await addDoc(collection(db,"chat"), {
+      nombre,
+      email,
+      mensaje: mensajeTexto,
+      fecha: serverTimestamp(),
+      visto: false
+    });
+    chatInput.value = "";
+  } catch(err){
+    console.error("Error enviando mensaje:", err);
+  }
 };
+
+// Marcar mensajes como leídos para el usuario actual
+async function marcarMensajesLeidos() {
+  const q = query(collection(db, "chat"), orderBy("fecha"));
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach(async (doc) => {
+    const data = doc.data();
+    if(data.email !== auth.currentUser.email && !data.visto){
+      await doc.ref.update({ visto: true });
+    }
+  });
+}

@@ -190,7 +190,7 @@ input[type="file"] {
   width: 100%;
 }
 
-/* ---------- Chat flotante ---------- */
+/* Botón flotante */
 #chatButton {
   position: fixed;
   bottom: 50px;
@@ -200,6 +200,7 @@ input[type="file"] {
   padding: 15px;
   border-radius: 50%;
   cursor: pointer;
+  font-size: 18px;
   z-index: 10;
 }
 
@@ -213,6 +214,7 @@ input[type="file"] {
   right: -5px;
 }
 
+/* Ventana del chat */
 #chatDiv {
   display: none;
   position: fixed;
@@ -225,18 +227,20 @@ input[type="file"] {
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   flex-direction: column;
   z-index: 10;
+  overflow: hidden;
 }
 
+/* Header del chat */
 #chatHeader {
   background-color: #ff6f00;
   color: #fff;
   padding: 10px;
   display: flex;
   justify-content: space-between;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  align-items: center;
 }
 
+/* Mensajes */
 #chatMensajes {
   flex: 1;
   padding: 10px;
@@ -244,10 +248,41 @@ input[type="file"] {
   max-height: 250px;
 }
 
+.mensaje {
+  margin-bottom: 8px;
+  padding: 5px;
+  border-radius: 8px;
+  background-color: #f2f2f2;
+}
+
+.mensaje span {
+  display: block;
+  font-size: 10px;
+  color: #666;
+  text-align: right;
+}
+
+/* Input y botón */
 #chatInput {
+  width: calc(100% - 70px);
   padding: 8px;
-  width: calc(100% - 20px);
-  margin: 5px 10px;
+  margin: 5px 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+#chatDiv button {
+  padding: 8px 12px;
+  background-color: #ff6f00;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+#chatDiv button:hover {
+  background-color: #e65a00;
 }
 
 /* ---------- Responsive ---------- */

@@ -11,31 +11,30 @@
 
   <!-- Encabezado -->
   <header>
-  <button id="menuToggle">☰</button>
+  <button id="menuToggle" style="display:none;">☰</button>
   <h2>Soluciones Estevéz S.U.R.L.</h2>
 </header>
 
-<!-- Barra lateral (desplegable) -->
-<aside id="sidebar" style="display:none;">
+<!-- Barra lateral desplegable -->
+<aside id="sidebar">
   <ul id="sidebarMenu"></ul>
 </aside>
 
-  <!-- Contenido -->
-  <main>
-    <!-- Login centrado -->
-    <div id="loginDiv" class="tarjeta-login">
-      <h3>Acceso a la intranet</h3>
-      <input type="email" id="email" placeholder="Correo electrónico">
-      <input type="password" id="password" placeholder="Contraseña">
-      <button onclick="login()">Entrar</button>
-    </div>
+<main>
+  <!-- Login -->
+  <div id="loginDiv" class="tarjeta-login">
+    <h3>Acceso a la intranet</h3>
+    <input type="email" id="email" placeholder="Correo electrónico">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="login()">Entrar</button>
+  </div>
 
-    <!-- Contenido principal -->
-    <div id="contenidoDiv" style="display:none;">
-      <h3 id="bienvenida"></h3>
-      <div id="documentosDiv"></div>
-    </div>
-  </main>
+  <!-- Contenido después del login -->
+  <div id="contenidoDiv" style="display:none;">
+    <h3 id="bienvenida"></h3>
+    <div id="documentosDiv"></div>
+  </div>
+</main>
 
   <!-- Chat flotante (oculto hasta login) -->
   <div id="chatButton" onclick="abrirChat()" style="display:none;">💬<span id="chatBadge">0</span></div>

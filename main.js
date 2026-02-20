@@ -6,7 +6,7 @@ import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDoc
 // ------------------- Elementos HTML -------------------
 const loginDiv = document.getElementById("loginDiv");
 const contenidoDiv = document.getElementById("contenidoDiv");
-const usuarioNombre = document.getElementById("usuarioNombre");
+const bienvenida = document.getElementById("bienvenida");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 
@@ -48,20 +48,19 @@ async function login() {
     loginDiv.style.display = "none";
     contenidoDiv.style.display = "block";
 
-    // Verificar que el span exista
-   // Diccionario de nombres de bienvenida según usuario
-const nombresBienvenida = {
-  "arquitecto@sestevez.com": "Emanuel",
-  "administrador@sestevez.com": "Adriel",
-  "economica@sestevez.com": "Elenita",
-  "civil@sestevez.com": "Doime",
-  "secretaria@sestevez.com": "Secretaria",
-  "recursosh@sestevez.com": "RRHH",
-  "comercial@sestevez.com": "Comercial"
-};
+    // Mensaje de bienvenida personalizado
+    const nombresBienvenida = {
+      "arquitecto@sestevez.com": "Emanuel",
+      "administrador@sestevez.com": "Adriel",
+      "economica@sestevez.com": "Elenita",
+      "civil@sestevez.com": "Doime",
+      "secretaria@sestevez.com": "Secretaria",
+      "recursosh@sestevez.com": "RRHH",
+      "comercial@sestevez.com": "Comercial"
+    };
 
-const nombre = nombresBienvenida[email] || email.split("@")[0];
-if(usuarioNombre) usuarioNombre.textContent = "Bienvenido " + nombre;
+    const nombre = nombresBienvenida[email] || email.split("@")[0];
+    if(bienvenida) bienvenida.textContent = "Bienvenido " + nombre;
 
     // Mostrar menú y chat
     if(menuToggle) menuToggle.style.display = "block";
@@ -109,14 +108,17 @@ function cargarMenuLateral(email){
     const li = document.createElement("li");
     li.textContent = depto;
     li.addEventListener("click", () => {
-  // Oculta todos los contenidos de departamentos
-  const deptos = document.querySelectorAll(".departamentoDiv");
-  deptos.forEach(d => d.style.display = "none");
+      // Oculta todos los contenidos de departamentos
+      const deptos = document.querySelectorAll(".departamentoDiv");
+      deptos.forEach(d => d.style.display = "none");
 
-  // Muestra solo el departamento seleccionado
-  const depDiv = document.getElementById("depto_" + depto.replace(/\s+/g,''));
-  if(depDiv) depDiv.style.display = "block";
-});
+      // Muestra solo el departamento seleccionado
+      const depDiv = document.getElementById("depto_" + depto.replace(/\s+/g,''));
+      if(depDiv) depDiv.style.display = "block";
+
+      // Cierra el menú lateral
+      sidebar.classList.remove("show");
+    });
     sidebarMenu.appendChild(li);
   });
 }
@@ -152,7 +154,16 @@ window.enviarMensaje = async () => {
 
   const mensaje = chatInput.value.trim();
   const email = auth.currentUser.email;
-  const nombre = email.split('@')[0];
+  const nombres = {
+    "arquitecto@sestevez.com": "Emanuel",
+    "administrador@sestevez.com": "Adriel",
+    "economica@sestevez.com": "Elenita",
+    "civil@sestevez.com": "Doime",
+    "secretaria@sestevez.com": "Secretaria",
+    "recursosh@sestevez.com": "RRHH",
+    "comercial@sestevez.com": "Comercial"
+  };
+  const nombre = nombres[email] || email.split("@")[0];
 
   await addDoc(collection(db,"chat"), {
     nombre,

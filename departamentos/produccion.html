@@ -1,17 +1,60 @@
-<div class="tarjeta">
-  <h4>Presupuestos de Obra</h4>
-  <input type="file" id="fileInputPresupuestos">
-  <button onclick="subirArchivo('produccion','presupuestos')">Subir archivo</button>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Producción - Soluciones Estevéz</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+
+<header>
+  <h2>Producción</h2>
+  <button id="menuToggle">☰</button>
+</header>
+
+<aside id="sidebar">
+  <ul id="sidebarMenu"></ul>
+</aside>
+
+<main id="contenidoDiv">
+  <h3>Documentos de Producción</h3>
+  
+  <!-- Tarjeta subir archivo -->
+  <div class="tarjeta" id="uploadCard">
+    <button id="addFileBtn" class="boton">+ Subir Archivo</button>
+    <div id="uploadForm" style="display:none; margin-top:10px;">
+      <input type="text" id="archivoTitulo" placeholder="Título del archivo">
+      <input type="file" id="archivoInput">
+      <button class="boton" id="submitArchivo">Subir</button>
+      <div id="status"></div>
+    </div>
+  </div>
+
+  <!-- Lista de archivos subidos -->
+  <div id="archivosList"></div>
+</main>
+
+<footer>
+  <p>Producción - Soluciones Estevéz S.U.R.L.</p>
+</footer>
+
+<!-- Chat flotante -->
+<button id="chatButton" onclick="abrirChat()" style="display:none;">
+  💬 <span id="chatBadge">0</span>
+</button>
+<div id="chatDiv">
+  <div id="chatHeader">
+    <span>Chat</span>
+    <button onclick="cerrarChat()">✖</button>
+  </div>
+  <div id="chatMensajes"></div>
+  <div>
+    <input type="text" id="chatInput" placeholder="Escribe tu mensaje...">
+    <button onclick="enviarMensaje()">Enviar</button>
+  </div>
 </div>
 
-<div class="tarjeta">
-  <h4>Cronogramas</h4>
-  <input type="file" id="fileInputCronogramas">
-  <button onclick="subirArchivo('produccion','cronogramas')">Subir archivo</button>
-</div>
-
-<div class="tarjeta">
-  <h4>Certificaciones</h4>
-  <input type="file" id="fileInputCertificaciones">
-  <button onclick="subirArchivo('produccion','certificaciones')">Subir archivo</button>
-</div>
+</body>
+</html>

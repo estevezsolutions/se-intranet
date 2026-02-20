@@ -8,31 +8,35 @@
   <script type="module" src="main.js"></script>
 </head>
 <body>
+
+  <!-- Encabezado -->
   <header>
     <div id="menuIcon" onclick="toggleSidebar()">☰</div>
-    <h2>Intranet Soluciones Estevéz S.U.R.L.</h2>
+    <h2 id="bienvenida"></h2>
   </header>
 
+  <!-- Barra lateral -->
   <aside id="sidebar">
     <ul id="sidebarMenu"></ul>
   </aside>
 
+  <!-- Contenido -->
   <main>
-    <!-- LOGIN -->
-    <div id="loginDiv">
+    <!-- Login -->
+    <div id="loginDiv" class="tarjeta">
+      <h3>Acceso a la intranet</h3>
       <input type="email" id="email" placeholder="Correo electrónico">
       <input type="password" id="password" placeholder="Contraseña">
       <button onclick="login()">Entrar</button>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL -->
+    <!-- Contenido principal -->
     <div id="contenidoDiv" style="display:none;">
-      <h3>Bienvenido, <span id="usuarioNombre"></span></h3>
       <div id="documentosDiv"></div>
     </div>
   </main>
 
-  <!-- CHAT FLOTANTE -->
+  <!-- Chat flotante -->
   <div id="chatButton" onclick="abrirChat()">💬<span id="chatBadge">0</span></div>
   <div id="chatDiv">
     <div id="chatHeader">
@@ -43,8 +47,10 @@
     <button onclick="enviarMensaje()">Enviar</button>
   </div>
 
+  <!-- Footer -->
   <footer>
     <p>© 2026 Soluciones Estevéz S.U.R.L.</p>
   </footer>
+
 </body>
 </html>

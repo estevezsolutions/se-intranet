@@ -33,29 +33,28 @@
     <div id="contenidoDiv" style="display:none;">
       <h3 id="bienvenida"></h3>
       <div id="documentosDiv">
-       <div id="depto_Direccion" class="departamentoDiv" style="display:none;">
-  <h3>Dirección</h3>
-  <!-- Contenido de Dirección -->
-</div>
 
-<div id="depto_Economia" class="departamentoDiv" style="display:none;">
-  <h3>Economía</h3>
-  <!-- Contenido de Economía -->
-</div>
+        <!-- Departamentos -->
+        <div id="depto_Direccion" class="departamentoDiv" style="display:none;">
+          <h3>Dirección</h3>
+        </div>
 
-<div id="depto_Produccion" class="departamentoDiv" style="display:none;">
-  <h3>Producción</h3>
-  <!-- Contenido de Producción -->
-</div>
-<div id="depto_Comercial" class="departamentoDiv" style="display:none;">
-  <h3>Comercial</h3>
-  <!-- Contenido de Comercial -->
-</div>
+        <div id="depto_Economia" class="departamentoDiv" style="display:none;">
+          <h3>Economía</h3>
+        </div>
+
+        <div id="depto_Produccion" class="departamentoDiv" style="display:none;">
+          <h3>Producción</h3>
+        </div>
+
+        <div id="depto_Comercial" class="departamentoDiv" style="display:none;">
+          <h3>Comercial</h3>
+        </div>
+
         <div id="depto_RecursosHumanos" class="departamentoDiv" style="display:none;">
-  <h3>Recursos Humanos</h3>
-  <!-- Contenido de Recursos Humanos -->
-</div>
-<!-- y así sucesivamente para todos los departamentos -->
+          <h3>Recursos Humanos</h3>
+        </div>
+
       </div>
     </div>
   </main>
@@ -73,7 +72,7 @@
       <button onclick="cerrarChat()">✖</button>
     </div>
     <div id="chatMensajes"></div>
-    <div>
+    <div id="chatInputContainer">
       <input type="text" id="chatInput" placeholder="Escribe tu mensaje...">
       <button onclick="enviarMensaje()">Enviar</button>
     </div>

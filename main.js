@@ -1,57 +1,70 @@
-import { auth } from "./firebase-config.js";
+import { auth, db } from './firebase-config.js';
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+// Roles y nombres cortos
+const roles = {
+  "arquitecto@sestevez.com": "Arquitecto",
+  "administrador@sestevez.com": "Administrador",
+  "secretaria@sestevez.com": "Secretaria",
+  "elena@economia.com": "Económica",
+  "doime@produccion.com": "Civil",
+  "rrhh@recursos.com": "Recursos",
+  "comercial@comercial.com": "Comercial"
+};
 
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    document.getElementById("loginDiv").style.display = "none";
-    document.getElementById("contenidoDiv").style.display = "block";
-    document.getElementById("usuarioNombre").innerText = user.email.split('@')[0]; // nombre corto
-
-    // Guardar departamento del usuario
-    usuarioActual.email = user.email;
-    // usuarioActual.departamento = ... (lo sacamos de Firestore después)
-    
-    console.log("Usuario conectado:", user.email);
-  } catch (error) {
-    alert("Error en el login: " + error.message);
-  }
-}
-// Mostrar login y contenido
-let usuarioActual = { email:"", departamento:"" };
-
+// Login
 window.login = async function(){
   const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const pass = document.getElementById("password").value;
   try{
-    const { user } = await firebase.auth().signInWithEmailAndPassword(firebase.auth(), email, password);
-    usuarioActual.email = user.email;
+    const userCredential = await signInWithEmailAndPassword(auth,email,pass);
     document.getElementById("loginDiv").style.display="none";
     document.getElementById("contenidoDiv").style.display="block";
-    document.getElementById("usuarioNombre").innerText = usuarioActual.email.split('@')[0];
-  }catch(e){
-    alert("Error: "+e.message);
+    document.getElementById("usuarioNombre").textContent = roles[email] || email;
+    initChat();
+  }catch(err){
+    alert("Usuario o contraseña incorrecta");
   }
-}
+};
 
-// Sidebar
-const menuBtn = document.getElementById("menuBtn");
-const sidebar = document.getElementById("sidebar");
-menuBtn.onclick = ()=> sidebar.style.width = "250px";
-window.cerrarSidebar = ()=> sidebar.style.width = "0";
-
-// Mostrar secciones por departamento
+// Mostrar departamento
 window.mostrarDepartamento = function(depto){
-  document.querySelectorAll('.departamento').forEach(sec=> sec.style.display='none');
-  document.getElementById(depto).style.display='block';
+  const div = document.getElementById("documentosDiv");
+  div.innerHTML = `<iframe src="departamentos/${depto}.html" style="width:100%; height:600px; border:none;"></iframe>`;
 }
 
-// Chat flotante
-window.abrirChat = function(){
-  alert("Aquí se abrirá el chat en tiempo real con Firebase.");
+// Chat
+let chatListener;
+function initChat(){
+  const q = query(collection(db,"chat"),orderBy("fecha"));
+  chatListener = onSnapshot(q,snapshot=>{
+    const chatDiv = document.getElementById("chatMensajes");
+    chatDiv.innerHTML="";
+    snapshot.forEach(doc=>{
+      const data = doc.data();
+      const mensaje = document.createElement("div");
+      const hora = new Date(data.fecha.seconds*1000).toLocaleTimeString();
+      mensaje.innerHTML=`<b>${data.nombre}</b>: ${data.mensaje} <span style="font-size:10px;color:#666">${hora}</span>`;
+      chatDiv.appendChild(mensaje);
+    });
+    document.getElementById("chatBadge").textContent=snapshot.size;
+  });
+}
+
+window.abrirChat = function(){ document.getElementById("chatDiv").style.display="flex"; }
+window.cerrarChat = function(){ document.getElementById("chatDiv").style.display="none"; }
+
+window.enviarMensaje = async function(){
+  const input = document.getElementById("chatInput");
+  if(!input.value) return;
+  await addDoc(collection(db,"chat"),{
+    nombre: document.getElementById("usuarioNombre").textContent,
+    mensaje: input.value,
+    fecha: new Date(),
+    avatar: "",
+    leido: false,
+    notificado: false
+  });
+  input.value="";
 }

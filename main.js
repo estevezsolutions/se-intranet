@@ -13,6 +13,7 @@ const passwordInput = document.getElementById("password");
 // Botón y sidebar
 const menuToggle = document.getElementById("menuToggle");
 const sidebar = document.getElementById("sidebar");
+const sidebarMenu = document.getElementById("sidebarMenu");
 
 // Chat
 const chatButton = document.getElementById("chatButton");
@@ -33,6 +34,12 @@ const archivosList = document.getElementById("archivosList");
 async function login() {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
+
+  if (!email || !password) {
+    alert("Debes ingresar correo y contraseña");
+    return;
+  }
+
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -40,11 +47,13 @@ async function login() {
     // Ocultar login y mostrar contenido
     loginDiv.style.display = "none";
     contenidoDiv.style.display = "block";
-    usuarioNombre.textContent = email.split("@")[0];
+
+    // Verificar que el span exista
+    if(usuarioNombre) usuarioNombre.textContent = email.split("@")[0];
 
     // Mostrar menú y chat
-    menuToggle.style.display = "block";
-    chatButton.style.display = "block";
+    if(menuToggle) menuToggle.style.display = "block";
+    if(chatButton) chatButton.style.display = "block";
 
     // Inicializar chat
     initChat();
@@ -63,9 +72,11 @@ async function login() {
 document.querySelector("#loginDiv button").addEventListener("click", login);
 
 // ------------------- Menú lateral -------------------
-menuToggle.addEventListener("click", () => {
-  sidebar.classList.toggle("show");
-});
+if(menuToggle && sidebar) {
+  menuToggle.addEventListener("click", () => {
+    sidebar.classList.toggle("show");
+  });
+}
 
 function cargarMenuLateral(email){
   const roles = {
@@ -79,13 +90,14 @@ function cargarMenuLateral(email){
   };
 
   const menu = roles[email] || [];
-  const sidebarMenu = document.getElementById("sidebarMenu");
+  if(!sidebarMenu) return;
+
   sidebarMenu.innerHTML = "";
   menu.forEach(depto => {
     const li = document.createElement("li");
     li.textContent = depto;
     li.addEventListener("click", () => {
-      alert("Ir a la página de " + depto); // Aquí luego pondrás la navegación real
+      alert("Ir a la página de " + depto); // Aquí pondrás la navegación real
     });
     sidebarMenu.appendChild(li);
   });
@@ -97,6 +109,7 @@ let chatListener;
 function initChat() {
   const q = query(collection(db,"chat"), orderBy("fecha"));
   chatListener = onSnapshot(q, snapshot => {
+    if(!chatMensajes) return;
     chatMensajes.innerHTML = "";
     snapshot.forEach(doc => {
       const data = doc.data();
@@ -107,67 +120,79 @@ function initChat() {
       chatMensajes.appendChild(mensaje);
     });
     chatMensajes.scrollTop = chatMensajes.scrollHeight;
-    document.getElementById("chatBadge").textContent = snapshot.size;
+
+    const badge = document.getElementById("chatBadge");
+    if(badge) badge.textContent = snapshot.size;
   });
 }
 
-window.abrirChat = () => { chatDiv.style.display="flex"; }
-window.cerrarChat = () => { chatDiv.style.display="none"; }
+window.abrirChat = () => { if(chatDiv) chatDiv.style.display="flex"; }
+window.cerrarChat = () => { if(chatDiv) chatDiv.style.display="none"; }
 
 window.enviarMensaje = async () => {
+  if(!chatInput || !chatInput.value.trim()) return;
+
   const mensaje = chatInput.value.trim();
-  if(!mensaje) return;
   const email = auth.currentUser.email;
   const nombre = email.split('@')[0];
+
   await addDoc(collection(db,"chat"), {
     nombre,
     mensaje,
     fecha: serverTimestamp()
   });
+
   chatInput.value = "";
 };
 
 // ------------------- Subida de archivos -------------------
-addFileBtn.addEventListener("click", () => {
-  uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
-});
+if(addFileBtn && uploadForm) {
+  addFileBtn.addEventListener("click", () => {
+    uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+  });
+}
 
-submitArchivo.addEventListener("click", async () => {
-  if(!archivoInput.files[0] || !archivoTitulo.value) {
-    status.textContent = "Por favor completa todos los campos.";
-    return;
-  }
-  status.textContent = "Subiendo...";
+if(submitArchivo) {
+  submitArchivo.addEventListener("click", async () => {
+    if(!archivoInput.files[0] || !archivoTitulo.value) {
+      status.textContent = "Por favor completa todos los campos.";
+      return;
+    }
+    status.textContent = "Subiendo...";
 
-  const file = archivoInput.files[0];
-  const titulo = archivoTitulo.value;
+    const file = archivoInput.files[0];
+    const titulo = archivoTitulo.value;
 
-  try {
-    // Aquí debes integrar tu API de Google Drive para obtener archivoURL real
-    const archivoURL = "https://drive.google.com/archivoID"; // temporal
-    
-    await addDoc(collection(db,"archivosProduccion"),{
-      titulo,
-      archivoURL,
-      creadoPor: auth.currentUser.email,
-      fecha: serverTimestamp()
-    });
+    try {
+      // Aquí debes integrar tu API de Google Drive para obtener archivoURL real
+      const archivoURL = "https://drive.google.com/archivoID"; // temporal
 
-    status.textContent = "Archivo subido con éxito!";
-    archivoInput.value = "";
-    archivoTitulo.value = "";
-    uploadForm.style.display = "none";
+      await addDoc(collection(db,"archivosProduccion"),{
+        titulo,
+        archivoURL,
+        creadoPor: auth.currentUser.email,
+        fecha: serverTimestamp()
+      });
 
-    cargarArchivos();
-  } catch(err){
-    status.textContent = "Error al subir: " + err.message;
-  }
-});
+      status.textContent = "Archivo subido con éxito!";
+      archivoInput.value = "";
+      archivoTitulo.value = "";
+      uploadForm.style.display = "none";
+
+      cargarArchivos();
+    } catch(err){
+      status.textContent = "Error al subir: " + err.message;
+    }
+  });
+}
 
 // ------------------- Cargar archivos -------------------
 async function cargarArchivos() {
+  if(!archivosList) return;
+
   const q = query(collection(db,"archivosProduccion"), orderBy("fecha","desc"));
   const snapshot = await getDocs(q);
+
   archivosList.innerHTML = "";
   snapshot.forEach(doc => {
     const data = doc.data();

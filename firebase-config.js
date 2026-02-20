@@ -9,6 +9,7 @@ const firebaseConfig = {
   storageBucket: "soluciones-estevez-intranet.appspot.com",
   messagingSenderId: "133562810227",
   appId: "1:133562810227:web:7ac6397537e457c5618f06"
+   measurementId: "G-ZM62BNVK3H"
 };
 
 const app = initializeApp(firebaseConfig);

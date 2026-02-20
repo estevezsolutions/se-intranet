@@ -19,7 +19,75 @@ const chatButton = document.getElementById("chatButton");
 const chatDiv = document.getElementById("chatDiv");
 const chatMensajes = document.getElementById("chatMensajes");
 const chatInput = document.getElementById("chatInput");
+const addFileBtn = document.getElementById("addFileBtn");
+const uploadForm = document.getElementById("uploadForm");
+const submitArchivo = document.getElementById("submitArchivo");
+const archivoInput = document.getElementById("archivoInput");
+const archivoTitulo = document.getElementById("archivoTitulo");
+const status = document.getElementById("status");
+const archivosList = document.getElementById("archivosList");
 
+addFileBtn.addEventListener("click", () => {
+  uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+});
+
+submitArchivo.addEventListener("click", async () => {
+  if(!archivoInput.files[0] || !archivoTitulo.value) {
+    status.textContent = "Por favor completa todos los campos.";
+    return;
+  }
+  status.textContent = "Subiendo...";
+  
+  // Subida a Google Drive vía API
+  const file = archivoInput.files[0];
+  const titulo = archivoTitulo.value;
+
+  try {
+    // Lógica para subir a Google Drive o Firestore URL del archivo
+    // Aquí asumimos que sube y devuelve un link URL
+    const archivoURL = "https://drive.google.com/archivoID"; // reemplazar con integración real
+    
+    // Guardar en Firestore
+    await addDoc(collection(db,"archivosProduccion"),{
+      titulo,
+      archivoURL,
+      creadoPor: auth.currentUser.email,
+      fecha: serverTimestamp()
+    });
+
+    status.textContent = "Archivo subido con éxito!";
+    archivoInput.value = "";
+    archivoTitulo.value = "";
+    uploadForm.style.display = "none";
+
+    cargarArchivos();
+  } catch(err){
+    status.textContent = "Error al subir: " + err.message;
+  }
+});
+
+// Cargar archivos subidos
+async function cargarArchivos() {
+  const q = query(collection(db,"archivosProduccion"), orderBy("fecha","desc"));
+  const snapshot = await getDocs(q);
+  archivosList.innerHTML = "";
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const div = document.createElement("div");
+    div.classList.add("archivoItem");
+    div.innerHTML = `
+      <span>${data.titulo}</span>
+      <div>
+        <button onclick="window.open('${data.archivoURL}','_blank')">Abrir</button>
+        <button onclick="window.location.href='${data.archivoURL}'">Descargar</button>
+      </div>
+    `;
+    archivosList.appendChild(div);
+  });
+}
+
+// Cargar archivos al iniciar
+cargarArchivos();
 // LOGIN
 async function login() {
   const email = emailInput.value.trim();

@@ -107,18 +107,10 @@ function cargarMenuLateral(email){
   menu.forEach(depto => {
     const li = document.createElement("li");
     li.textContent = depto;
-    li.addEventListener("click", () => {
-  // Oculta todos los contenidos de departamentos
-  const deptos = document.querySelectorAll(".departamentoDiv");
-  deptos.forEach(d => d.style.display = "none");
-
-  // Muestra solo el departamento seleccionado
-  const depDiv = document.getElementById("depto_" + depto.replace(/\s+/g,''));
-  if(depDiv) depDiv.style.display = "block";
-
-  // Oculta automáticamente el menú lateral
-  sidebar.classList.remove("show");
-});
+   <div id="depto_Produccion" class="departamentoDiv" style="display:none;">
+  <h3>Producción</h3>
+  <!-- Contenido de Producción -->
+</div>
 }
 
 // ------------------- Chat estilo WhatsApp -------------------

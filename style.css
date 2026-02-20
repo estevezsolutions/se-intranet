@@ -295,3 +295,30 @@ input[type="file"] {
     font-size: 14px;
   }
 }
+/* Tarjeta subir archivo */
+#uploadCard {
+  text-align: center;
+}
+
+#uploadCard button {
+  font-size: 24px;
+  padding: 15px 20px;
+}
+
+#archivosList {
+  margin-top: 20px;
+}
+
+.archivoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+.archivoItem button {
+  margin-left: 5px;
+}

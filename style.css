@@ -1,135 +1,41 @@
-/* ---------- Reset básico ---------- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
+/* Reset y tipografía */
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Roboto, sans-serif; }
+body { background:#f7f7f7; color:#333; padding:20px; }
 
-body {
-  background-color: #f7f7f7;
-  color: #333;
-  line-height: 1.5;
-  padding: 20px;
-}
+/* Encabezados */
+h2 { text-align:center; margin-bottom:30px; color:#ff6f00; font-weight:700; }
+h3 { color:#ff6f00; margin-bottom:15px; }
 
-/* ---------- Encabezado ---------- */
-h2 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #ff6f00; /* Naranja principal */
-  font-weight: 700;
-}
+/* Login */
+#loginDiv { max-width:400px; margin:0 auto 50px; background:#fff; padding:30px; border-radius:12px; box-shadow:0 6px 15px rgba(0,0,0,0.1); }
+#loginDiv input { width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px; }
+#loginDiv button { width:100%; padding:12px; background:#ff6f00; color:#fff; border:none; border-radius:8px; cursor:pointer; }
+#loginDiv button:hover { background:#e65a00; }
 
-h3 {
-  color: #ff6f00;
-  margin-bottom: 15px;
-}
+/* Contenido */
+#contenidoDiv { max-width:1000px; margin:0 auto; }
 
-/* ---------- Login ---------- */
-#loginDiv {
-  max-width: 400px;
-  margin: 0 auto 50px auto;
-  background-color: #fff;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
+/* Barra lateral */
+.sidebar { width:200px; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); padding:20px; position:fixed; top:80px; left:0; height:90%; }
+.sidebar ul { list-style:none; }
+.sidebar li { padding:12px; cursor:pointer; border-radius:8px; margin-bottom:10px; transition:0.2s; }
+.sidebar li:hover { background:#ff6f00; color:#fff; }
 
-#loginDiv input {
-  width: 100%;
-  padding: 12px 15px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
-}
+/* Botón flotante chat */
+#chatButton { position:fixed; bottom:20px; right:20px; background:#ff6f00; color:#fff; padding:15px; border-radius:50%; cursor:pointer; font-size:18px; }
+#chatBadge { background:red; color:white; border-radius:50%; padding:2px 6px; font-size:12px; position:relative; top:-10px; left:-5px; }
 
-#loginDiv button {
-  width: 100%;
-  padding: 12px;
-  background-color: #ff6f00;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
+/* Tarjetas */
+.tarjeta { background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.08); padding:20px; margin-bottom:25px; }
+.tarjeta:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.12); }
+.tarjeta h4 { margin-bottom:15px; color:#ff6f00; }
 
-#loginDiv button:hover {
-  background-color: #e65a00;
-}
+/* Chat */
+#chatDiv { position:fixed; bottom:80px; right:20px; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.2); display:flex; flex-direction:column; padding:10px; }
+#chatMensajes { flex:1; overflow-y:auto; margin-bottom:10px; }
+#chatInput { padding:8px; border-radius:8px; border:1px solid #ccc; width:calc(100% - 90px); margin-bottom:5px; }
+#chatDiv button { padding:8px; margin-top:5px; background:#ff6f00; color:#fff; border:none; border-radius:8px; cursor:pointer; }
+#chatDiv button:hover { background:#e65a00; }
 
-/* ---------- Contenido principal ---------- */
-#contenidoDiv {
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-/* ---------- Tarjetas ---------- */
-.tarjeta {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  padding: 20px;
-  margin-bottom: 25px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.tarjeta:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
-.tarjeta h4 {
-  margin-bottom: 15px;
-  color: #ff6f00;
-}
-
-/* ---------- Botones ---------- */
-.boton {
-  padding: 10px 18px;
-  background-color: #ff6f00;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.3s ease;
-  margin-top: 10px;
-}
-
-.boton:hover {
-  background-color: #e65a00;
-}
-
-/* ---------- Input de archivos ---------- */
-input[type="file"] {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  margin-bottom: 15px;
-  width: 100%;
-}
-
-/* ---------- Mensajes de estado ---------- */
-#status {
-  margin-top: 15px;
-  font-size: 14px;
-  color: #555;
-}
-
-/* ---------- Responsive ---------- */
-@media (max-width: 600px) {
-  #loginDiv, #contenidoDiv {
-    padding: 20px;
-  }
-  .tarjeta {
-    padding: 15px;
-  }
-  #loginDiv button, .boton {
-    font-size: 14px;
-  }
-}
+/* Responsive */
+@media(max-width:600px){ .sidebar{display:none;} #contenidoDiv{padding:10px;} }

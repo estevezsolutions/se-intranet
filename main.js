@@ -26,8 +26,12 @@ window.login = async function() {
     document.getElementById("loginDiv").style.display = "none";
     document.getElementById("contenidoDiv").style.display = "block";
 
+    // Configurar barra lateral según rol
     configurarMenu(email);
+
+    // Inicializar chat y mostrar botones
     initChat();
+    document.getElementById("chatButton").style.display = "block";
 
   } catch (error) {
     alert("Usuario o contraseña incorrecta");

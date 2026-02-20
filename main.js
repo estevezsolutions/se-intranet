@@ -108,19 +108,17 @@ function cargarMenuLateral(email){
     const li = document.createElement("li");
     li.textContent = depto;
     li.addEventListener("click", () => {
-      // Oculta todos los contenidos de departamentos
-      const deptos = document.querySelectorAll(".departamentoDiv");
-      deptos.forEach(d => d.style.display = "none");
+  // Oculta todos los contenidos de departamentos
+  const deptos = document.querySelectorAll(".departamentoDiv");
+  deptos.forEach(d => d.style.display = "none");
 
-      // Muestra solo el departamento seleccionado
-      const depDiv = document.getElementById("depto_" + depto.replace(/\s+/g,''));
-      if(depDiv) depDiv.style.display = "block";
+  // Muestra solo el departamento seleccionado
+  const depDiv = document.getElementById("depto_" + depto.replace(/\s+/g,''));
+  if(depDiv) depDiv.style.display = "block";
 
-      // Cierra el menú lateral
-      sidebar.classList.remove("show");
-    });
-    sidebarMenu.appendChild(li);
-  });
+  // Oculta automáticamente el menú lateral
+  sidebar.classList.remove("show");
+});
 }
 
 // ------------------- Chat estilo WhatsApp -------------------

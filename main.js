@@ -13,78 +13,94 @@ const rolesUsuarios = {
   "comercial@sestevez.com":"comercial"
 };
 
+// Elementos
+const menuToggle = document.getElementById("menuToggle");
+const sidebar = document.getElementById("sidebar");
+
+// Toggle barra lateral
+menuToggle.addEventListener("click", () => {
+  sidebar.classList.toggle("show");
+});
+
 // LOGIN
 window.login = async function(){
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
   try{
     await signInWithEmailAndPassword(auth,email,password);
-    const nombre=email.split('@')[0];
-    document.getElementById("bienvenida").textContent=`Bienvenido, ${nombre}`;
-    document.getElementById("loginDiv").style.display="none";
-    document.getElementById("contenidoDiv").style.display="block";
-    document.getElementById("sidebar").style.display="block"; // mostrar menú
-    initChat();
-    document.getElementById("chatButton").style.display="block"; // mostrar chat
+    const nombre = email.split('@')[0];
+    document.getElementById("bienvenida").textContent = `Bienvenido, ${nombre}`;
+    
+    // Mostrar contenido
+    document.getElementById("loginDiv").style.display = "none";
+    document.getElementById("contenidoDiv").style.display = "block";
+
+    // Mostrar menú lateral
+    menuToggle.style.display = "block";
     configurarMenu(email);
+
+    // Inicializar chat
+    initChat();
+    document.getElementById("chatButton").style.display = "block";
+
   }catch(e){
     alert("Usuario o contraseña incorrecta");
   }
 };
 
-// Menú lateral según rol
+// Configurar menú lateral según rol
 function configurarMenu(email){
-  const menu=document.getElementById("sidebarMenu");
-  menu.innerHTML="";
-  const rol=rolesUsuarios[email];
-  const departamentos={direccion:"Dirección", economia:"Economía", produccion:"Producción", comercial:"Comercial", rrhh:"Recursos Humanos"};
+  const menu = document.getElementById("sidebarMenu");
+  menu.innerHTML = "";
+  const rol = rolesUsuarios[email];
+  const departamentos = {
+    direccion:"Dirección",
+    economia:"Economía",
+    produccion:"Producción",
+    comercial:"Comercial",
+    rrhh:"Recursos Humanos"
+  };
   for(const key in departamentos){
     if(rol==="admin" || rol===key){
-      const li=document.createElement("li");
-      li.textContent=departamentos[key];
-      li.onclick=()=>{ irADepartamento(key,rol); };
+      const li = document.createElement("li");
+      li.textContent = departamentos[key];
+      li.onclick = ()=>{
+        if(rol==="admin" || rol===key) window.location.href = `departamentos/${key}.html`;
+        else alert("No tienes permiso para acceder a este departamento.");
+      };
       menu.appendChild(li);
     }
   }
-}
-function irADepartamento(depto,rol){
-  if(rol==="admin" || rol===depto) window.location.href=`departamentos/${depto}.html`;
-  else alert("No tienes permiso para acceder a este departamento.");
 }
 
 // Chat
 let chatListener;
 function initChat(){
-  const q=query(collection(db,"chat"),orderBy("fecha"));
-  chatListener=onSnapshot(q,snapshot=>{
-    const chatDiv=document.getElementById("chatMensajes");
+  const q = query(collection(db,"chat"),orderBy("fecha"));
+  chatListener = onSnapshot(q,snapshot=>{
+    const chatDiv = document.getElementById("chatMensajes");
     chatDiv.innerHTML="";
     snapshot.forEach(doc=>{
-      const data=doc.data();
-      const hora=new Date(data.fecha.seconds*1000).toLocaleTimeString();
-      const mensaje=document.createElement("div");
+      const data = doc.data();
+      const hora = new Date(data.fecha.seconds*1000).toLocaleTimeString();
+      const mensaje = document.createElement("div");
       mensaje.classList.add('mensaje');
-      mensaje.innerHTML=`<b>${data.nombre}</b>: ${data.mensaje} <span style="font-size:10px;color:#666">${hora}</span>`;
+      mensaje.innerHTML = `<b>${data.nombre}</b>: ${data.mensaje} <span style="font-size:10px;color:#666">${hora}</span>`;
       chatDiv.appendChild(mensaje);
     });
-    chatDiv.scrollTop=chatDiv.scrollHeight;
-    document.getElementById("chatBadge").textContent=snapshot.size;
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+    document.getElementById("chatBadge").textContent = snapshot.size;
   });
 }
-window.abrirChat=function(){document.getElementById("chatDiv").style.display="flex";}
-window.cerrarChat=function(){document.getElementById("chatDiv").style.display="none";}
-window.enviarMensaje=async function(){
-  const input=document.getElementById("chatInput");
-  const mensaje=input.value.trim();
+
+window.abrirChat = function(){ document.getElementById("chatDiv").style.display="flex"; }
+window.cerrarChat = function(){ document.getElementById("chatDiv").style.display="none"; }
+window.enviarMensaje = async function(){
+  const input = document.getElementById("chatInput");
+  const mensaje = input.value.trim();
   if(!mensaje) return;
-  const email=auth.currentUser.email;
-  const nombre=email.split('@')[0];
+  const email = auth.currentUser.email;
+  const nombre = email.split('@')[0];
   await addDoc(collection(db,"chat"),{nombre,mensaje,fecha:serverTimestamp()});
   input.value="";
 }
-const menuToggle=document.getElementById("menuToggle");
-const sidebar=document.getElementById("sidebar");
-
-menuToggle.addEventListener("click",()=>{
-  sidebar.classList.toggle("show");
-});

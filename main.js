@@ -1,106 +1,116 @@
+// main.js
 import { auth, db } from './firebase-config.js';
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-// Roles de usuarios
-const rolesUsuarios = {
-  "arquitecto@sestevez.com":"admin",
-  "administrador@sestevez.com":"direccion",
-  "secretaria@sestevez.com":"direccion",
-  "economica@sestevez.com":"economia",
-  "civil@sestevez.com":"produccion",
-  "recursosh@sestevez.com":"rrhh",
-  "comercial@sestevez.com":"comercial"
-};
+// Elementos HTML
+const loginDiv = document.getElementById("loginDiv");
+const contenidoDiv = document.getElementById("contenidoDiv");
+const usuarioNombre = document.getElementById("usuarioNombre");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 
-// Elementos
+// Botón y sidebar
 const menuToggle = document.getElementById("menuToggle");
 const sidebar = document.getElementById("sidebar");
 
-// Toggle barra lateral
+// Chat
+const chatButton = document.getElementById("chatButton");
+const chatDiv = document.getElementById("chatDiv");
+const chatMensajes = document.getElementById("chatMensajes");
+const chatInput = document.getElementById("chatInput");
+
+// LOGIN
+async function login() {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    loginDiv.style.display = "none";
+    contenidoDiv.style.display = "block";
+    usuarioNombre.textContent = email.split("@")[0];
+
+    // Mostrar menú lateral y chat solo al usuario autenticado
+    menuToggle.style.display = "block";
+    chatButton.style.display = "block";
+
+    // Inicializa chat
+    initChat();
+
+    // Carga menú lateral según roles
+    cargarMenuLateral(user.email);
+
+  } catch (error) {
+    alert("Error de login: " + error.message);
+  }
+}
+
+// Evento login
+document.querySelector("#loginDiv button").addEventListener("click", login);
+
+// MENÚ LATERAL
 menuToggle.addEventListener("click", () => {
   sidebar.classList.toggle("show");
 });
 
-// LOGIN
-window.login = async function(){
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  try{
-    await signInWithEmailAndPassword(auth,email,password);
-    const nombre = email.split('@')[0];
-    document.getElementById("bienvenida").textContent = `Bienvenido, ${nombre}`;
-    
-    // Mostrar contenido
-    document.getElementById("loginDiv").style.display = "none";
-    document.getElementById("contenidoDiv").style.display = "block";
-
-    // Mostrar menú lateral
-    menuToggle.style.display = "block";
-    configurarMenu(email);
-
-    // Inicializar chat
-    initChat();
-    document.getElementById("chatButton").style.display = "block";
-
-  }catch(e){
-    alert("Usuario o contraseña incorrecta");
-  }
-};
-
-// Configurar menú lateral según rol
-function configurarMenu(email){
-  const menu = document.getElementById("sidebarMenu");
-  menu.innerHTML = "";
-  const rol = rolesUsuarios[email];
-  const departamentos = {
-    direccion:"Dirección",
-    economia:"Economía",
-    produccion:"Producción",
-    comercial:"Comercial",
-    rrhh:"Recursos Humanos"
+function cargarMenuLateral(email){
+  // Define roles y páginas
+  const roles = {
+    "arquitecto@sestevez.com": ["Direccion","Economia","Produccion","Comercial","Recursos Humanos"],
+    "administrador@sestevez.com": ["Direccion"],
+    "secretaria@sestevez.com": ["Direccion"],
+    "economica@sestevez.com": ["Economia"],
+    "civil@sestevez.com": ["Produccion"],
+    "recursosh@sestevez.com": ["Recursos Humanos"],
+    "comercial@sestevez.com": ["Comercial"]
   };
-  for(const key in departamentos){
-    if(rol==="admin" || rol===key){
-      const li = document.createElement("li");
-      li.textContent = departamentos[key];
-      li.onclick = ()=>{
-        if(rol==="admin" || rol===key) window.location.href = `departamentos/${key}.html`;
-        else alert("No tienes permiso para acceder a este departamento.");
-      };
-      menu.appendChild(li);
-    }
-  }
+
+  const menu = roles[email] || [];
+  const sidebarMenu = document.getElementById("sidebarMenu");
+  sidebarMenu.innerHTML = "";
+  menu.forEach(depto => {
+    const li = document.createElement("li");
+    li.textContent = depto;
+    li.addEventListener("click", () => {
+      alert("Ir a la página de " + depto); // Aquí se cargará la página real de cada departamento
+    });
+    sidebarMenu.appendChild(li);
+  });
 }
 
-// Chat
+// CHAT FUNCIONAL
 let chatListener;
-function initChat(){
-  const q = query(collection(db,"chat"),orderBy("fecha"));
-  chatListener = onSnapshot(q,snapshot=>{
-    const chatDiv = document.getElementById("chatMensajes");
-    chatDiv.innerHTML="";
-    snapshot.forEach(doc=>{
+
+function initChat() {
+  const q = query(collection(db,"chat"), orderBy("fecha"));
+  chatListener = onSnapshot(q, snapshot => {
+    chatMensajes.innerHTML = "";
+    snapshot.forEach(doc => {
       const data = doc.data();
-      const hora = new Date(data.fecha.seconds*1000).toLocaleTimeString();
+      const hora = data.fecha ? new Date(data.fecha.seconds*1000).toLocaleTimeString() : "";
       const mensaje = document.createElement("div");
-      mensaje.classList.add('mensaje');
-      mensaje.innerHTML = `<b>${data.nombre}</b>: ${data.mensaje} <span style="font-size:10px;color:#666">${hora}</span>`;
-      chatDiv.appendChild(mensaje);
+      mensaje.classList.add("mensaje");
+      mensaje.innerHTML = `<b>${data.nombre}</b>: ${data.mensaje} <span>${hora}</span>`;
+      chatMensajes.appendChild(mensaje);
     });
-    chatDiv.scrollTop = chatDiv.scrollHeight;
+    chatMensajes.scrollTop = chatMensajes.scrollHeight;
     document.getElementById("chatBadge").textContent = snapshot.size;
   });
 }
 
-window.abrirChat = function(){ document.getElementById("chatDiv").style.display="flex"; }
-window.cerrarChat = function(){ document.getElementById("chatDiv").style.display="none"; }
-window.enviarMensaje = async function(){
-  const input = document.getElementById("chatInput");
-  const mensaje = input.value.trim();
+window.abrirChat = () => { chatDiv.style.display="flex"; }
+window.cerrarChat = () => { chatDiv.style.display="none"; }
+
+window.enviarMensaje = async () => {
+  const mensaje = chatInput.value.trim();
   if(!mensaje) return;
   const email = auth.currentUser.email;
   const nombre = email.split('@')[0];
-  await addDoc(collection(db,"chat"),{nombre,mensaje,fecha:serverTimestamp()});
-  input.value="";
-}
+  await addDoc(collection(db,"chat"), {
+    nombre,
+    mensaje,
+    fecha: serverTimestamp()
+  });
+  chatInput.value = "";
+};

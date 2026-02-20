@@ -214,25 +214,24 @@ input[type="file"] {
   right: -5px;
 }
 
-/* Ventana del chat */
+/* Chat flotante estilo WhatsApp */
 #chatDiv {
   display: none;
   position: fixed;
-  bottom: 110px;
+  bottom: 20px;
   right: 20px;
   width: 300px;
   max-height: 400px;
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
   flex-direction: column;
-  z-index: 10;
   overflow: hidden;
+  z-index: 1000;
 }
 
-/* Header del chat */
 #chatHeader {
-  background-color: #ff6f00;
+  background-color: #075E54;
   color: #fff;
   padding: 10px;
   display: flex;
@@ -240,49 +239,75 @@ input[type="file"] {
   align-items: center;
 }
 
-/* Mensajes */
 #chatMensajes {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
-  max-height: 250px;
+  background-color: #ECE5DD;
+}
+
+#chatDiv input, #chatDiv button {
+  padding: 8px;
+  margin: 4px;
 }
 
 .mensaje {
-  margin-bottom: 8px;
-  padding: 5px;
-  border-radius: 8px;
-  background-color: #f2f2f2;
+  margin-bottom: 10px;
+  display: flex;
 }
 
-.mensaje span {
-  display: block;
-  font-size: 10px;
-  color: #666;
+.mensaje .burbuja {
+  max-width: 75%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  position: relative;
+  word-wrap: break-word;
+}
+
+.mensaje-propio .burbuja {
+  background-color: #DCF8C6;
+  margin-left: auto;
   text-align: right;
 }
 
-/* Input y botón */
-#chatInput {
-  width: calc(100% - 70px);
-  padding: 8px;
-  margin: 5px 5px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+.mensaje-otro .burbuja {
+  background-color: #fff;
+  margin-right: auto;
+  text-align: left;
 }
 
-#chatDiv button {
-  padding: 8px 12px;
-  background-color: #ff6f00;
+.mensaje .hora {
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.mensaje .estado {
+  font-size: 10px;
+  margin-left: 5px;
+}
+
+.punto {
+  font-size: 12px;
+  margin: 0 1px;
+}
+
+.punto.rojo { color: red; }
+.punto.verde { color: green; }
+
+#chatDiv div input {
+  width: calc(100% - 60px);
+  border: 1px solid #ccc;
+  border-radius: 20px;
+}
+
+#chatDiv div button {
+  width: 50px;
+  border-radius: 20px;
+  background-color: #25D366;
   color: #fff;
   border: none;
-  border-radius: 8px;
   cursor: pointer;
-  margin-right: 5px;
-}
-
-#chatDiv button:hover {
-  background-color: #e65a00;
 }
 
 /* ---------- Responsive ---------- */

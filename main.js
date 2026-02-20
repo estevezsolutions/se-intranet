@@ -184,3 +184,35 @@ window.crearRegistroFactura = async function(){
 window.verListadoTrabajadores = function(){
   alert("Aquí se mostraría el listado de trabajadores desde Firestore");
 }
+// Barra lateral
+function toggleSidebar(){
+  const sidebar=document.getElementById('sidebar');
+  const main=document.querySelector('main');
+  if(sidebar.style.left==='0px'){
+    sidebar.style.left='-220px';
+    main.style.marginLeft='0';
+  }else{
+    sidebar.style.left='0px';
+    main.style.marginLeft='220px';
+  }
+}
+
+// Chat mejorado
+let chatListener;
+function initChat(){
+  const q = query(collection(db,"chat"),orderBy("fecha"));
+  chatListener = onSnapshot(q,snapshot=>{
+    const chatDiv = document.getElementById("chatMensajes");
+    chatDiv.innerHTML="";
+    snapshot.forEach(doc=>{
+      const data = doc.data();
+      const hora = new Date(data.fecha.seconds*1000).toLocaleTimeString();
+      const mensaje = document.createElement("div");
+      mensaje.classList.add('mensaje');
+      mensaje.innerHTML=`<b>${data.nombre}</b>: ${data.mensaje} <span style="font-size:10px;color:#666">${hora}</span>`;
+      chatDiv.appendChild(mensaje);
+    });
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+    document.getElementById("chatBadge").textContent=snapshot.size;
+  });
+}

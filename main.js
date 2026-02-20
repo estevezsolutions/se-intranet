@@ -49,7 +49,19 @@ async function login() {
     contenidoDiv.style.display = "block";
 
     // Verificar que el span exista
-    if(usuarioNombre) usuarioNombre.textContent = email.split("@")[0];
+   // Diccionario de nombres de bienvenida según usuario
+const nombresBienvenida = {
+  "arquitecto@sestevez.com": "Emanuel",
+  "administrador@sestevez.com": "Adriel",
+  "economica@sestevez.com": "Elenita",
+  "civil@sestevez.com": "Doime",
+  "secretaria@sestevez.com": "Secretaria",
+  "recursosh@sestevez.com": "RRHH",
+  "comercial@sestevez.com": "Comercial"
+};
+
+const nombre = nombresBienvenida[email] || email.split("@")[0];
+if(usuarioNombre) usuarioNombre.textContent = "Bienvenido " + nombre;
 
     // Mostrar menú y chat
     if(menuToggle) menuToggle.style.display = "block";
@@ -97,8 +109,14 @@ function cargarMenuLateral(email){
     const li = document.createElement("li");
     li.textContent = depto;
     li.addEventListener("click", () => {
-      alert("Ir a la página de " + depto); // Aquí pondrás la navegación real
-    });
+  // Oculta todos los contenidos de departamentos
+  const deptos = document.querySelectorAll(".departamentoDiv");
+  deptos.forEach(d => d.style.display = "none");
+
+  // Muestra solo el departamento seleccionado
+  const depDiv = document.getElementById("depto_" + depto.replace(/\s+/g,''));
+  if(depDiv) depDiv.style.display = "block";
+});
     sidebarMenu.appendChild(li);
   });
 }

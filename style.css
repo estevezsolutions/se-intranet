@@ -103,10 +103,10 @@ footer {
 /* ---------- Barra lateral ---------- */
 #sidebar {
   position: fixed;
-  top: 60px;
-  left: -220px; /* Oculto inicialmente */
+  top: 60px; /* justo debajo del header */
+  left: -220px; /* oculto a la izquierda */
   width: 220px;
-  height: calc(100% - 100px);
+  height: calc(100% - 60px);
   background-color: #fff;
   box-shadow: 2px 0 5px rgba(0,0,0,0.1);
   overflow: auto;
@@ -115,7 +115,7 @@ footer {
 }
 
 #sidebar.show {
-  left: 0;
+  left: 0; /* visible */
 }
 
 #sidebar ul {
@@ -132,7 +132,6 @@ footer {
   background-color: #ff6f00;
   color: #fff;
 }
-
 /* ---------- Contenido principal ---------- */
 main {
   margin-top: 60px;

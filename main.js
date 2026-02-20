@@ -82,3 +82,9 @@ window.enviarMensaje=async function(){
   await addDoc(collection(db,"chat"),{nombre,mensaje,fecha:serverTimestamp()});
   input.value="";
 }
+const menuToggle=document.getElementById("menuToggle");
+const sidebar=document.getElementById("sidebar");
+
+menuToggle.addEventListener("click",()=>{
+  sidebar.classList.toggle("show");
+});

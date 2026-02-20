@@ -11,19 +11,18 @@
 
   <!-- Encabezado -->
   <header>
-    <div id="menuIcon" onclick="toggleSidebar()">☰</div>
-    <h2 id="bienvenida"></h2>
+    <h2>Soluciones Estevéz S.U.R.L.</h2>
   </header>
 
-  <!-- Barra lateral -->
-  <aside id="sidebar">
+  <!-- Barra lateral (oculta inicialmente) -->
+  <aside id="sidebar" style="display:none;">
     <ul id="sidebarMenu"></ul>
   </aside>
 
   <!-- Contenido -->
   <main>
-    <!-- Login -->
-    <div id="loginDiv" class="tarjeta">
+    <!-- Login centrado -->
+    <div id="loginDiv" class="tarjeta-login">
       <h3>Acceso a la intranet</h3>
       <input type="email" id="email" placeholder="Correo electrónico">
       <input type="password" id="password" placeholder="Contraseña">
@@ -32,22 +31,22 @@
 
     <!-- Contenido principal -->
     <div id="contenidoDiv" style="display:none;">
+      <h3 id="bienvenida"></h3>
       <div id="documentosDiv"></div>
     </div>
   </main>
 
-  <!-- ... resto igual ... -->
-
-<!-- Chat flotante -->
-<div id="chatButton" onclick="abrirChat()" style="display:none;">💬<span id="chatBadge">0</span></div>
-<div id="chatDiv" style="display:none;">
-  <div id="chatHeader">
-    <span>Chat</span> <button onclick="cerrarChat()">✖</button>
+  <!-- Chat flotante (oculto hasta login) -->
+  <div id="chatButton" onclick="abrirChat()" style="display:none;">💬<span id="chatBadge">0</span></div>
+  <div id="chatDiv" style="display:none;">
+    <div id="chatHeader">
+      <span>Chat</span> <button onclick="cerrarChat()">✖</button>
+    </div>
+    <div id="chatMensajes"></div>
+    <input type="text" id="chatInput" placeholder="Escribe un mensaje">
+    <button onclick="enviarMensaje()">Enviar</button>
   </div>
-  <div id="chatMensajes"></div>
-  <input type="text" id="chatInput" placeholder="Escribe un mensaje">
-  <button onclick="enviarMensaje()">Enviar</button>
-</div>
+
   <!-- Footer -->
   <footer>
     <p>© 2026 Soluciones Estevéz S.U.R.L.</p>

@@ -125,7 +125,24 @@ function cargarMenuLateral(email){
 
 // ------------------- Chat estilo WhatsApp -------------------
 let chatListener;
+const esPropio = auth.currentUser && auth.currentUser.email === data.email;
+mensajeDiv.classList.add(esPropio ? "mensaje-propio" : "mensaje-otro");
 
+// Estado de puntos
+let puntos = '';
+if(esPropio){
+  // Propio: rojo si no visto, verde si visto
+  puntos = `<span class="punto ${data.visto ? 'verde' : 'rojo'}">•</span>
+            <span class="punto ${data.visto ? 'verde' : 'rojo'}">•</span>`;
+}
+
+mensajeDiv.innerHTML = `
+  <div class="burbuja">
+    <div class="texto"><b>${data.nombre}</b>: ${data.mensaje}</div>
+    <div class="hora">${fechaStr} ${hora}</div>
+    <div class="estado">${puntos}</div>
+  </div>
+`;
 function initChat() {
   const q = query(collection(db,"chat"), orderBy("fecha"));
   chatListener = onSnapshot(q, snapshot => {
@@ -195,6 +212,29 @@ window.enviarMensaje = async () => {
 
   chatInput.value = "";
 };
+// Actualiza los mensajes entregados a leídos cuando el usuario abre el chat
+async function marcarMensajesLeidos() {
+  const q = query(collection(db, "chat"), orderBy("fecha"));
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach(async (doc) => {
+    const data = doc.data();
+    // Si el mensaje no es mío y aún no se ha visto
+    if(data.email !== auth.currentUser.email && !data.visto) {
+      await addDoc(collection(db, "chat_vistos"), {
+        mensajeId: doc.id,
+        vistoPor: auth.currentUser.email,
+        fecha: serverTimestamp()
+      });
+      // Actualizamos el campo visto en el mensaje original
+      await doc.ref.update({ visto: true });
+    }
+  });
+}
+window.abrirChat = () => { 
+  if(chatDiv) chatDiv.style.display="flex"; 
+  marcarMensajesLeidos(); // <-- marcar los mensajes como leídos
+}
 // ------------------- Subida de archivos -------------------
 if(addFileBtn && uploadForm) {
   addFileBtn.addEventListener("click", () => {

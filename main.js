@@ -123,7 +123,7 @@ function cargarMenuLateral(email){
   });
 }
 
-// ------------------- Chat -------------------
+// ------------------- Chat estilo WhatsApp -------------------
 let chatListener;
 
 function initChat() {
@@ -131,16 +131,35 @@ function initChat() {
   chatListener = onSnapshot(q, snapshot => {
     if(!chatMensajes) return;
     chatMensajes.innerHTML = "";
+
     snapshot.forEach(doc => {
       const data = doc.data();
-      const hora = data.fecha ? new Date(data.fecha.seconds*1000).toLocaleTimeString() : "";
-      const mensaje = document.createElement("div");
-      mensaje.classList.add("mensaje");
-      mensaje.innerHTML = `<b>${data.nombre}</b>: ${data.mensaje} <span>${hora}</span>`;
-      chatMensajes.appendChild(mensaje);
+      const fecha = data.fecha ? new Date(data.fecha.seconds*1000) : new Date();
+      const hora = fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const fechaStr = fecha.toLocaleDateString();
+
+      const mensajeDiv = document.createElement("div");
+      mensajeDiv.classList.add("mensaje");
+
+      // Determinar si es mi mensaje o de otro usuario
+      const esPropio = auth.currentUser && auth.currentUser.email === data.email;
+      mensajeDiv.classList.add(esPropio ? "mensaje-propio" : "mensaje-otro");
+
+      // Burbuja de mensaje
+      mensajeDiv.innerHTML = `
+        <div class="burbuja">
+          <div class="texto"><b>${data.nombre}</b>: ${data.mensaje}</div>
+          <div class="hora">${fechaStr} ${hora}</div>
+          <div class="estado">${esPropio ? '<span class="punto rojo">•</span><span class="punto rojo">•</span>' : ''}</div>
+        </div>
+      `;
+
+      chatMensajes.appendChild(mensajeDiv);
     });
+
     chatMensajes.scrollTop = chatMensajes.scrollHeight;
 
+    // Badge de notificaciones
     const badge = document.getElementById("chatBadge");
     if(badge) badge.textContent = snapshot.size;
   });
@@ -152,7 +171,7 @@ window.cerrarChat = () => { if(chatDiv) chatDiv.style.display="none"; }
 window.enviarMensaje = async () => {
   if(!chatInput || !chatInput.value.trim()) return;
 
-  const mensaje = chatInput.value.trim();
+  const mensajeTexto = chatInput.value.trim();
   const email = auth.currentUser.email;
   const nombres = {
     "arquitecto@sestevez.com": "Emanuel",
@@ -167,13 +186,15 @@ window.enviarMensaje = async () => {
 
   await addDoc(collection(db,"chat"), {
     nombre,
-    mensaje,
-    fecha: serverTimestamp()
+    email, // agregar para identificar quién envía
+    mensaje: mensajeTexto,
+    fecha: serverTimestamp(),
+    entregado: true, // se puede usar para los puntos rojos
+    visto: false // cambiar a true cuando otro usuario lo vea
   });
 
   chatInput.value = "";
 };
-
 // ------------------- Subida de archivos -------------------
 if(addFileBtn && uploadForm) {
   addFileBtn.addEventListener("click", () => {

@@ -1,7 +1,7 @@
 // main.js
 import { auth, db } from './firebase-config.js';
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // ------------------- Elementos HTML -------------------
 const loginDiv = document.getElementById("loginDiv");
@@ -88,12 +88,9 @@ function cargarMenuLateral(){
 
     li.addEventListener("click", () => {
       const depDiv = document.getElementById("depto_" + depto.replace(/\s+/g,''));
-
       if(depDiv){
-        // Solo hacer scroll hacia el departamento
         depDiv.scrollIntoView({ behavior: "smooth" });
       }
-
       // Ocultar menú lateral en móvil
       sidebar.classList.remove("show");
     });
@@ -112,12 +109,12 @@ let chatListener;
 
 function initChat() {
   const q = query(collection(db,"chat"), orderBy("fecha"));
-  
+
   chatListener = onSnapshot(q, snapshot => {
     if(!chatMensajes) return;
     chatMensajes.innerHTML = "";
     
-    let unreadCount = 0; // contador de mensajes no leídos
+    let unreadCount = 0;
 
     snapshot.forEach(async docSnap => {
       const data = docSnap.data();
@@ -131,9 +128,8 @@ function initChat() {
       mensajeDiv.classList.add("mensaje");
       mensajeDiv.classList.add(esPropio ? "mensaje-propio" : "mensaje-otro");
 
-      // Burbuja estilo WhatsApp
       mensajeDiv.innerHTML = `
-        <div class="burbuja">
+        <div class="burbuja ${esPropio ? 'propio' : 'otro'}">
           <div class="texto"><b>${data.nombre}</b>: ${data.mensaje}</div>
           <div class="hora">${fechaStr} ${hora}</div>
           <div class="estado">
@@ -146,22 +142,24 @@ function initChat() {
       `;
 
       chatMensajes.appendChild(mensajeDiv);
+      mensajeDiv.classList.add("fadeIn");
 
-      // 🔹 Marcar mensaje como leído si no es mío y actualizar Firestore
       if(!esPropio && !data.visto){
         unreadCount++;
         await updateDoc(doc(db,"chat",docSnap.id), { visto: true });
       }
     });
 
-    // Actualizar burbuja de notificación
     const badge = document.getElementById("chatBadge");
     if(badge){
       badge.style.display = unreadCount ? "flex" : "none";
       badge.textContent = unreadCount;
     }
 
-    chatMensajes.scrollTop = chatMensajes.scrollHeight;
+    chatMensajes.scrollTo({
+      top: chatMensajes.scrollHeight,
+      behavior: 'smooth'
+    });
   });
 }
 

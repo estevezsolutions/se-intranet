@@ -3,31 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <title>Intranet Soluciones Estevéz S.U.R.L.</title>
-
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase App y Firestore/Auth -->
   <script type="module" src="firebase-config.js"></script>
   <script type="module" src="main.js"></script>
 </head>
 <body>
 
-  <!-- Título principal -->
-  <h2>Intranet Soluciones Estevéz S.U.R.L.</h2>
-
   <!-- LOGIN -->
   <div id="loginDiv">
+    <h2>Intranet Soluciones Estevéz S.U.R.L.</h2>
     <input type="email" id="email" placeholder="Correo electrónico">
     <input type="password" id="password" placeholder="Contraseña">
     <button onclick="login()">Entrar</button>
   </div>
 
-  <!-- CONTENIDO PRINCIPAL (oculto hasta login) -->
+  <!-- CONTENIDO PRINCIPAL -->
   <div id="contenidoDiv" style="display:none;">
-    <h3>Bienvenido, <span id="usuarioNombre"></span></h3>
 
-    <!-- Aquí después agregaremos la barra lateral, botones flotantes y secciones por departamento -->
+    <!-- HEADER -->
+    <header>
+      <button id="menuBtn">&#9776;</button> <!-- Botón de tres líneas -->
+      <h3>Bienvenido, <span id="usuarioNombre"></span></h3>
+    </header>
+
+    <!-- BARRA LATERAL -->
+    <aside id="sidebar" class="sidebar">
+      <button class="closeBtn" onclick="cerrarSidebar()">×</button>
+      <nav>
+        <button onclick="mostrarDepartamento('Direccion')">Dirección</button>
+        <button onclick="mostrarDepartamento('Economia')">Economía</button>
+        <button onclick="mostrarDepartamento('Produccion')">Producción</button>
+        <button onclick="mostrarDepartamento('Comercial')">Comercial</button>
+        <button onclick="mostrarDepartamento('RecursosHumanos')">Recursos Humanos</button>
+      </nav>
+    </aside>
+
+    <!-- BOTON FLOTANTE CHAT -->
+    <button id="chatBtn" onclick="abrirChat()">💬<span id="chatBadge">0</span></button>
+
+    <!-- SECCIONES POR DEPARTAMENTO -->
+    <main>
+      <!-- Dirección -->
+      <section id="Direccion" class="departamento" style="display:none;">
+        <h4>Dirección</h4>
+        <div class="tarjeta">
+          <h4>Documentos notariales</h4>
+          <input type="file" id="fileDireccion" multiple>
+          <button class="boton" onclick="subirArchivosDepartamento('Direccion')">Subir documentos</button>
+          <div id="listaDireccion"></div>
+        </div>
+        <div class="tarjeta">
+          <h4>Actas de juntas</h4>
+          <div id="actasDireccion"></div>
+        </div>
+      </section>
+
+      <!-- Economía -->
+      <section id="Economia" class="departamento" style="display:none;">
+        <h4>Economía</h4>
+        <div class="tarjeta">
+          <h4>Facturas pagadas</h4>
+          <input type="file" id="fileFacturasPagadas" multiple>
+          <button class="boton" onclick="subirArchivosDepartamento('Economia','FacturasPagadas')">Subir</button>
+          <div id="listaFacturasPagadas"></div>
+        </div>
+        <div class="tarjeta">
+          <h4>Registro de facturación</h4>
+          <div id="registroFacturacion"></div>
+        </div>
+      </section>
+
+      <!-- Producción -->
+      <section id="Produccion" class="departamento" style="display:none;">
+        <h4>Producción</h4>
+        <div class="tarjeta">
+          <h4>Presupuestos</h4>
+          <input type="file" id="filePresupuestos" multiple>
+          <button class="boton" onclick="subirArchivosDepartamento('Produccion','Presupuestos')">Subir</button>
+          <div id="listaPresupuestos"></div>
+        </div>
+      </section>
+
+      <!-- Comercial -->
+      <section id="Comercial" class="departamento" style="display:none;">
+        <h4>Comercial</h4>
+        <div class="tarjeta">
+          <h4>Clientes contratados</h4>
+          <div id="clientesComercial"></div>
+        </div>
+      </section>
+
+      <!-- Recursos Humanos -->
+      <section id="RecursosHumanos" class="departamento" style="display:none;">
+        <h4>Recursos Humanos</h4>
+        <div class="tarjeta">
+          <h4>Listado de trabajadores</h4>
+          <div id="listadoTrabajadores"></div>
+        </div>
+      </section>
+    </main>
+
   </div>
 
 </body>

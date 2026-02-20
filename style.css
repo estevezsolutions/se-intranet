@@ -1,41 +1,46 @@
-/* Reset y tipografía */
-* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Roboto, sans-serif; }
-body { background:#f7f7f7; color:#333; padding:20px; }
+/* ---------- Reset y fuente ---------- */
+* {margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Roboto,sans-serif;}
+body{background:#f7f7f7;color:#333;padding:0;}
 
-/* Encabezados */
-h2 { text-align:center; margin-bottom:30px; color:#ff6f00; font-weight:700; }
-h3 { color:#ff6f00; margin-bottom:15px; }
+/* ---------- Encabezado y pie de página ---------- */
+header{display:flex;align-items:center;background:#ff6f00;color:#fff;padding:10px 20px;position:fixed;width:100%;top:0;z-index:1000;}
+header h2{flex:1;text-align:center;font-weight:700;}
+#menuIcon{cursor:pointer;font-size:24px;}
 
-/* Login */
-#loginDiv { max-width:400px; margin:0 auto 50px; background:#fff; padding:30px; border-radius:12px; box-shadow:0 6px 15px rgba(0,0,0,0.1); }
-#loginDiv input { width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px; }
-#loginDiv button { width:100%; padding:12px; background:#ff6f00; color:#fff; border:none; border-radius:8px; cursor:pointer; }
-#loginDiv button:hover { background:#e65a00; }
+footer{background:#333;color:#fff;text-align:center;padding:10px;margin-top:20px;}
 
-/* Contenido */
-#contenidoDiv { max-width:1000px; margin:0 auto; }
+/* ---------- Sidebar desplegable ---------- */
+#sidebar{position:fixed;top:50px;left:-220px;width:200px;background:#fff;height:100%;box-shadow:2px 0 5px rgba(0,0,0,0.1);transition:0.3s;padding-top:20px;z-index:999;}
+#sidebar ul{list-style:none;}
+#sidebar ul li{padding:12px 20px;cursor:pointer;border-bottom:1px solid #eee;}
+#sidebar ul li:hover{background:#ff6f00;color:#fff;}
 
-/* Barra lateral */
-.sidebar { width:200px; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.1); padding:20px; position:fixed; top:80px; left:0; height:90%; }
-.sidebar ul { list-style:none; }
-.sidebar li { padding:12px; cursor:pointer; border-radius:8px; margin-bottom:10px; transition:0.2s; }
-.sidebar li:hover { background:#ff6f00; color:#fff; }
+/* ---------- Main ---------- */
+main{margin-top:60px;padding:20px;transition:margin-left 0.3s;}
+#contenidoDiv{max-width:1000px;margin:0 auto;}
 
-/* Botón flotante chat */
-#chatButton { position:fixed; bottom:20px; right:20px; background:#ff6f00; color:#fff; padding:15px; border-radius:50%; cursor:pointer; font-size:18px; }
-#chatBadge { background:red; color:white; border-radius:50%; padding:2px 6px; font-size:12px; position:relative; top:-10px; left:-5px; }
+/* ---------- Tarjetas ---------- */
+.tarjeta{background:#fff;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.08);padding:20px;margin-bottom:25px;transition:transform 0.2s,box-shadow 0.2s;}
+.tarjeta:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(0,0,0,0.12);}
+.tarjeta h4{margin-bottom:15px;color:#ff6f00;}
 
-/* Tarjetas */
-.tarjeta { background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.08); padding:20px; margin-bottom:25px; }
-.tarjeta:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,0.12); }
-.tarjeta h4 { margin-bottom:15px; color:#ff6f00; }
+/* ---------- Botones ---------- */
+.boton,input[type="file"],button{padding:10px 15px;border-radius:8px;border:none;font-size:14px;cursor:pointer;}
+.boton,button{background:#ff6f00;color:#fff;transition:0.3s;}
+.boton:hover,button:hover{background:#e65a00;}
+input[type="file"]{border:1px solid #ccc;width:100%;margin-bottom:10px;}
 
-/* Chat */
-#chatDiv { position:fixed; bottom:80px; right:20px; width:300px; height:400px; background:#fff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.2); display:flex; flex-direction:column; padding:10px; }
-#chatMensajes { flex:1; overflow-y:auto; margin-bottom:10px; }
-#chatInput { padding:8px; border-radius:8px; border:1px solid #ccc; width:calc(100% - 90px); margin-bottom:5px; }
-#chatDiv button { padding:8px; margin-top:5px; background:#ff6f00; color:#fff; border:none; border-radius:8px; cursor:pointer; }
-#chatDiv button:hover { background:#e65a00; }
+/* ---------- Login ---------- */
+#loginDiv{max-width:400px;margin:50px auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 6px 15px rgba(0,0,0,0.1);}
+#loginDiv input{width:100%;margin-bottom:15px;padding:12px 15px;border:1px solid #ccc;border-radius:8px;}
+#loginDiv button{width:100%;padding:12px;font-size:16px;}
 
-/* Responsive */
-@media(max-width:600px){ .sidebar{display:none;} #contenidoDiv{padding:10px;} }
+/* ---------- Chat ---------- */
+#chatButton{position:fixed;bottom:20px;right:20px;background:#ff6f00;color:#fff;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1001;}
+#chatBadge{position:absolute;top:0;right:0;background:red;color:#fff;width:18px;height:18px;border-radius:50%;font-size:12px;text-align:center;line-height:18px;}
+
+#chatDiv{position:fixed;bottom:80px;right:20px;width:300px;height:400px;background:#fff;box-shadow:0 4px 20px rgba(0,0,0,0.2);display:none;flex-direction:column;border-radius:12px;overflow:hidden;z-index:1001;}
+#chatHeader{background:#ff6f00;color:#fff;padding:10px;display:flex;justify-content:space-between;align-items:center;}
+#chatMensajes{flex:1;padding:10px;overflow-y:auto;background:#f7f7f7;}
+#chatInput{padding:8px;margin:5px;border:1px solid #ccc;border-radius:6px;width:calc(100% - 90px);}
+#chatDiv button{margin:5px 10px 10px 10px;}

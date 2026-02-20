@@ -1,7 +1,7 @@
 // main.js
 import { auth, db } from './firebase-config.js';
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // ------------------- Elementos HTML -------------------
 const loginDiv = document.getElementById("loginDiv");
@@ -10,18 +10,15 @@ const bienvenida = document.getElementById("bienvenida");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 
-// Botón y sidebar
 const menuToggle = document.getElementById("menuToggle");
 const sidebar = document.getElementById("sidebar");
 const sidebarMenu = document.getElementById("sidebarMenu");
 
-// Chat
 const chatButton = document.getElementById("chatButton");
 const chatDiv = document.getElementById("chatDiv");
 const chatMensajes = document.getElementById("chatMensajes");
 const chatInput = document.getElementById("chatInput");
 
-// Subida de archivos
 const addFileBtn = document.getElementById("addFileBtn");
 const uploadForm = document.getElementById("uploadForm");
 const submitArchivo = document.getElementById("submitArchivo");
@@ -34,21 +31,15 @@ const archivosList = document.getElementById("archivosList");
 async function login() {
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
-
-  if (!email || !password) {
+  if(!email || !password) {
     alert("Debes ingresar correo y contraseña");
     return;
   }
 
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth,email,password);
     const user = userCredential.user;
 
-    // Ocultar login y mostrar contenido
-    loginDiv.style.display = "none";
-    contenidoDiv.style.display = "block";
-
-    // Mensaje de bienvenida personalizado
     const nombresBienvenida = {
       "arquitecto@sestevez.com": "Emanuel",
       "administrador@sestevez.com": "Adriel",
@@ -62,21 +53,27 @@ async function login() {
     const nombre = nombresBienvenida[email] || email.split("@")[0];
     if(bienvenida) bienvenida.textContent = "Bienvenido " + nombre;
 
-    // Mostrar menú y chat
+    // Mostrar menú lateral y chat
     if(menuToggle) menuToggle.style.display = "block";
     if(chatButton) chatButton.style.display = "block";
 
     // Inicializar chat
     initChat();
 
-    // Cargar menú lateral según roles
-    cargarMenuLateral(user.email);
+    // Redirigir a página del departamento del usuario
+    const deptoDefault = {
+      "arquitecto@sestevez.com": "departamentos/direccion.html",
+      "administrador@sestevez.com": "departamentos/direccion.html",
+      "economica@sestevez.com": "departamentos/economia.html",
+      "civil@sestevez.com": "departamentos/produccion.html",
+      "secretaria@sestevez.com": "departamentos/direccion.html",
+      "recursosh@sestevez.com": "departamentos/recursos.html",
+      "comercial@sestevez.com": "departamentos/comercial.html"
+    };
+    window.location.href = deptoDefault[email];
 
-    // Inicializar archivos
-    cargarArchivos();
-
-  } catch (error) {
-    alert("Error de login: " + error.message);
+  } catch(err) {
+    alert("Error de login: "+err.message);
   }
 }
 
@@ -84,9 +81,7 @@ document.querySelector("#loginDiv button").addEventListener("click", login);
 
 // ------------------- Menú lateral -------------------
 if(menuToggle && sidebar) {
-  menuToggle.addEventListener("click", () => {
-    sidebar.classList.toggle("show");
-  });
+  menuToggle.addEventListener("click", ()=>sidebar.classList.toggle("show"));
 }
 
 function cargarMenuLateral(email){
@@ -104,60 +99,56 @@ function cargarMenuLateral(email){
   if(!sidebarMenu) return;
 
   sidebarMenu.innerHTML = "";
-  menu.forEach(depto => {
+  menu.forEach(depto=>{
     const li = document.createElement("li");
     li.textContent = depto;
-   <div id="depto_Produccion" class="departamentoDiv" style="display:none;">
-  <h3>Producción</h3>
-  <!-- Contenido de Producción -->
-</div>
+
+    li.addEventListener("click", ()=>{
+      const deptoArchivo = {
+        "Direccion":"departamentos/direccion.html",
+        "Economia":"departamentos/economia.html",
+        "Produccion":"departamentos/produccion.html",
+        "Comercial":"departamentos/comercial.html",
+        "Recursos Humanos":"departamentos/recursos.html"
+      };
+      const url = deptoArchivo[depto];
+      if(url) window.location.href = url;
+    });
+
+    sidebarMenu.appendChild(li);
+  });
 }
 
 // ------------------- Chat estilo WhatsApp -------------------
 let chatListener;
-const esPropio = auth.currentUser && auth.currentUser.email === data.email;
-mensajeDiv.classList.add(esPropio ? "mensaje-propio" : "mensaje-otro");
 
-// Estado de puntos
-let puntos = '';
-if(esPropio){
-  // Propio: rojo si no visto, verde si visto
-  puntos = `<span class="punto ${data.visto ? 'verde' : 'rojo'}">•</span>
-            <span class="punto ${data.visto ? 'verde' : 'rojo'}">•</span>`;
-}
-
-mensajeDiv.innerHTML = `
-  <div class="burbuja">
-    <div class="texto"><b>${data.nombre}</b>: ${data.mensaje}</div>
-    <div class="hora">${fechaStr} ${hora}</div>
-    <div class="estado">${puntos}</div>
-  </div>
-`;
 function initChat() {
   const q = query(collection(db,"chat"), orderBy("fecha"));
-  chatListener = onSnapshot(q, snapshot => {
+  chatListener = onSnapshot(q, snapshot=>{
     if(!chatMensajes) return;
     chatMensajes.innerHTML = "";
 
-    snapshot.forEach(doc => {
+    snapshot.forEach(doc=>{
       const data = doc.data();
       const fecha = data.fecha ? new Date(data.fecha.seconds*1000) : new Date();
-      const hora = fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      const hora = fecha.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
       const fechaStr = fecha.toLocaleDateString();
 
       const mensajeDiv = document.createElement("div");
-      mensajeDiv.classList.add("mensaje");
+      const esPropio = auth.currentUser && auth.currentUser.email===data.email;
+      mensajeDiv.classList.add("mensaje", esPropio?"mensaje-propio":"mensaje-otro");
 
-      // Determinar si es mi mensaje o de otro usuario
-      const esPropio = auth.currentUser && auth.currentUser.email === data.email;
-      mensajeDiv.classList.add(esPropio ? "mensaje-propio" : "mensaje-otro");
+      let puntos = '';
+      if(esPropio){
+        puntos = `<span class="punto ${data.visto?'verde':'rojo'}">•</span>
+                  <span class="punto ${data.visto?'verde':'rojo'}">•</span>`;
+      }
 
-      // Burbuja de mensaje
       mensajeDiv.innerHTML = `
         <div class="burbuja">
           <div class="texto"><b>${data.nombre}</b>: ${data.mensaje}</div>
           <div class="hora">${fechaStr} ${hora}</div>
-          <div class="estado">${esPropio ? '<span class="punto rojo">•</span><span class="punto rojo">•</span>' : ''}</div>
+          <div class="estado">${puntos}</div>
         </div>
       `;
 
@@ -166,75 +157,69 @@ function initChat() {
 
     chatMensajes.scrollTop = chatMensajes.scrollHeight;
 
-    // Badge de notificaciones
     const badge = document.getElementById("chatBadge");
     if(badge) badge.textContent = snapshot.size;
   });
 }
 
-window.abrirChat = () => { if(chatDiv) chatDiv.style.display="flex"; }
+window.abrirChat = () => { 
+  if(chatDiv) chatDiv.style.display="flex"; 
+  marcarMensajesLeidos();
+}
+
 window.cerrarChat = () => { if(chatDiv) chatDiv.style.display="none"; }
 
-window.enviarMensaje = async () => {
+window.enviarMensaje = async ()=>{
   if(!chatInput || !chatInput.value.trim()) return;
-
   const mensajeTexto = chatInput.value.trim();
   const email = auth.currentUser.email;
+
   const nombres = {
-    "arquitecto@sestevez.com": "Emanuel",
-    "administrador@sestevez.com": "Adriel",
-    "economica@sestevez.com": "Elenita",
-    "civil@sestevez.com": "Doime",
-    "secretaria@sestevez.com": "Secretaria",
-    "recursosh@sestevez.com": "RRHH",
-    "comercial@sestevez.com": "Comercial"
+    "arquitecto@sestevez.com":"Emanuel",
+    "administrador@sestevez.com":"Adriel",
+    "economica@sestevez.com":"Elenita",
+    "civil@sestevez.com":"Doime",
+    "secretaria@sestevez.com":"Secretaria",
+    "recursosh@sestevez.com":"RRHH",
+    "comercial@sestevez.com":"Comercial"
   };
   const nombre = nombres[email] || email.split("@")[0];
 
-  await addDoc(collection(db,"chat"), {
+  await addDoc(collection(db,"chat"),{
     nombre,
-    email, // agregar para identificar quién envía
+    email,
     mensaje: mensajeTexto,
     fecha: serverTimestamp(),
-    entregado: true, // se puede usar para los puntos rojos
-    visto: false // cambiar a true cuando otro usuario lo vea
+    entregado:true,
+    visto:false
   });
 
-  chatInput.value = "";
+  chatInput.value="";
 };
-// Actualiza los mensajes entregados a leídos cuando el usuario abre el chat
-async function marcarMensajesLeidos() {
-  const q = query(collection(db, "chat"), orderBy("fecha"));
+
+// Marcar mensajes como leídos al abrir el chat
+async function marcarMensajesLeidos(){
+  const q = query(collection(db,"chat"), orderBy("fecha"));
   const snapshot = await getDocs(q);
 
-  snapshot.forEach(async (doc) => {
-    const data = doc.data();
-    // Si el mensaje no es mío y aún no se ha visto
-    if(data.email !== auth.currentUser.email && !data.visto) {
-      await addDoc(collection(db, "chat_vistos"), {
-        mensajeId: doc.id,
-        vistoPor: auth.currentUser.email,
-        fecha: serverTimestamp()
-      });
-      // Actualizamos el campo visto en el mensaje original
-      await doc.ref.update({ visto: true });
+  snapshot.forEach(async docSnap=>{
+    const data = docSnap.data();
+    if(data.email !== auth.currentUser.email && !data.visto){
+      await updateDoc(doc(db,"chat",docSnap.id), {visto:true});
     }
   });
 }
-window.abrirChat = () => { 
-  if(chatDiv) chatDiv.style.display="flex"; 
-  marcarMensajesLeidos(); // <-- marcar los mensajes como leídos
-}
+
 // ------------------- Subida de archivos -------------------
-if(addFileBtn && uploadForm) {
-  addFileBtn.addEventListener("click", () => {
-    uploadForm.style.display = uploadForm.style.display === "none" ? "block" : "none";
+if(addFileBtn && uploadForm){
+  addFileBtn.addEventListener("click", ()=>{
+    uploadForm.style.display = uploadForm.style.display==="none"?"block":"none";
   });
 }
 
-if(submitArchivo) {
-  submitArchivo.addEventListener("click", async () => {
-    if(!archivoInput.files[0] || !archivoTitulo.value) {
+if(submitArchivo){
+  submitArchivo.addEventListener("click", async ()=>{
+    if(!archivoInput.files[0] || !archivoTitulo.value){
       status.textContent = "Por favor completa todos los campos.";
       return;
     }
@@ -243,10 +228,8 @@ if(submitArchivo) {
     const file = archivoInput.files[0];
     const titulo = archivoTitulo.value;
 
-    try {
-      // Aquí debes integrar tu API de Google Drive para obtener archivoURL real
+    try{
       const archivoURL = "https://drive.google.com/archivoID"; // temporal
-
       await addDoc(collection(db,"archivosProduccion"),{
         titulo,
         archivoURL,
@@ -254,31 +237,29 @@ if(submitArchivo) {
         fecha: serverTimestamp()
       });
 
-      status.textContent = "Archivo subido con éxito!";
-      archivoInput.value = "";
-      archivoTitulo.value = "";
-      uploadForm.style.display = "none";
+      status.textContent="Archivo subido con éxito!";
+      archivoInput.value="";
+      archivoTitulo.value="";
+      uploadForm.style.display="none";
 
       cargarArchivos();
-    } catch(err){
-      status.textContent = "Error al subir: " + err.message;
+    }catch(err){
+      status.textContent="Error al subir: "+err.message;
     }
   });
 }
 
 // ------------------- Cargar archivos -------------------
-async function cargarArchivos() {
+async function cargarArchivos(){
   if(!archivosList) return;
-
   const q = query(collection(db,"archivosProduccion"), orderBy("fecha","desc"));
   const snapshot = await getDocs(q);
-
-  archivosList.innerHTML = "";
-  snapshot.forEach(doc => {
-    const data = doc.data();
+  archivosList.innerHTML="";
+  snapshot.forEach(docSnap=>{
+    const data = docSnap.data();
     const div = document.createElement("div");
     div.classList.add("archivoItem");
-    div.innerHTML = `
+    div.innerHTML=`
       <span>${data.titulo}</span>
       <div>
         <button onclick="window.open('${data.archivoURL}','_blank')">Abrir</button>

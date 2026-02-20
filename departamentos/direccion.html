@@ -1,17 +1,25 @@
-<div class="tarjeta">
-  <h4>Documentos de Dirección</h4>
-  <input type="file" id="fileInputDireccion">
-  <button onclick="subirArchivo('direccion')">Subir archivo</button>
-</div>
+<header>
+  <h3>Dirección</h3>
+</header>
 
-<div class="tarjeta">
-  <h4>Actas de juntas</h4>
-  <input type="file" id="fileInputActas">
-  <button onclick="subirArchivo('actas')">Subir archivo</button>
-</div>
+<main>
+  <div class="tarjeta">
+    <h4>Documentos de la Empresa</h4>
+    <input type="file" id="fileInputDocumentos">
+    <button onclick="subirArchivo('direccion','documentos')">Subir archivo</button>
+  </div>
+  <div class="tarjeta">
+    <h4>Actas de Juntas</h4>
+    <input type="file" id="fileInputActas">
+    <button onclick="subirArchivo('direccion','actas')">Subir archivo</button>
+  </div>
+  <div class="tarjeta">
+    <h4>Acuerdos</h4>
+    <input type="file" id="fileInputAcuerdos">
+    <button onclick="subirArchivo('direccion','acuerdos')">Subir archivo</button>
+  </div>
+</main>
 
-<div class="tarjeta">
-  <h4>Acuerdos</h4>
-  <input type="file" id="fileInputAcuerdos">
-  <button onclick="subirArchivo('acuerdos')">Subir archivo</button>
-</div>
+<footer>
+  <button onclick="contactarPorWhatsApp('direccion')">WhatsApp Director</button>
+</footer>

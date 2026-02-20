@@ -8,20 +8,12 @@
   <script type="module" src="main.js"></script>
 </head>
 <body>
+  <header>
+    <div id="menuIcon" onclick="toggleSidebar()">☰</div>
+    <h2>Intranet Soluciones Estevéz S.U.R.L.</h2>
+  </header>
 
-<h2>Soluciones Estevéz S.U.R.L.</h2>
-
-<!-- Login -->
-<div id="loginDiv">
-  <input type="email" id="email" placeholder="Correo electrónico">
-  <input type="password" id="password" placeholder="Contraseña">
-  <button onclick="login()">Entrar</button>
-</div>
-
-<!-- Contenido principal -->
-<div id="contenidoDiv" style="display:none;">
-  <!-- Barra lateral -->
-  <div id="sidebar" class="sidebar">
+  <aside id="sidebar">
     <ul>
       <li onclick="mostrarDepartamento('direccion')">Dirección</li>
       <li onclick="mostrarDepartamento('economia')">Economía</li>
@@ -29,26 +21,34 @@
       <li onclick="mostrarDepartamento('comercial')">Comercial</li>
       <li onclick="mostrarDepartamento('rrhh')">Recursos Humanos</li>
     </ul>
-  </div>
+  </aside>
 
-  <!-- Botón flotante de chat -->
-  <div id="chatButton" onclick="abrirChat()">
-    💬 <span id="chatBadge">0</span>
-  </div>
+  <main>
+    <div id="loginDiv">
+      <input type="email" id="email" placeholder="Correo electrónico">
+      <input type="password" id="password" placeholder="Contraseña">
+      <button onclick="login()">Entrar</button>
+    </div>
 
-  <h3>Bienvenido, <span id="usuarioNombre"></span></h3>
-
-  <!-- Contenedor de documentos/páginas de departamento -->
-  <div id="documentosDiv"></div>
+    <div id="contenidoDiv" style="display:none;">
+      <h3>Bienvenido, <span id="usuarioNombre"></span></h3>
+      <div id="documentosDiv"></div>
+    </div>
+  </main>
 
   <!-- Chat flotante -->
-  <div id="chatDiv" style="display:none;">
+  <div id="chatButton" onclick="abrirChat()">💬<span id="chatBadge">0</span></div>
+  <div id="chatDiv">
+    <div id="chatHeader">
+      <span>Chat</span> <button onclick="cerrarChat()">✖</button>
+    </div>
     <div id="chatMensajes"></div>
-    <input type="text" id="chatInput" placeholder="Escribe un mensaje...">
+    <input type="text" id="chatInput" placeholder="Escribe un mensaje">
     <button onclick="enviarMensaje()">Enviar</button>
-    <button onclick="cerrarChat()">Cerrar</button>
   </div>
-</div>
 
+  <footer>
+    <p>© 2026 Soluciones Estevéz S.U.R.L.</p>
+  </footer>
 </body>
 </html>

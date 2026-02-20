@@ -103,8 +103,8 @@ footer {
 /* ---------- Barra lateral ---------- */
 #sidebar {
   position: fixed;
-  top: 60px; /* justo debajo del header */
-  left: -220px; /* oculto a la izquierda */
+  top: 60px;
+  left: -220px;
   width: 220px;
   height: calc(100% - 60px);
   background-color: #fff;
@@ -115,7 +115,7 @@ footer {
 }
 
 #sidebar.show {
-  left: 0; /* visible */
+  left: 0;
 }
 
 #sidebar ul {
@@ -132,6 +132,7 @@ footer {
   background-color: #ff6f00;
   color: #fff;
 }
+
 /* ---------- Contenido principal ---------- */
 main {
   margin-top: 60px;
@@ -214,7 +215,7 @@ input[type="file"] {
   right: -5px;
 }
 
-/* Chat flotante estilo WhatsApp */
+/* ---------- Chat flotante estilo WhatsApp ---------- */
 #chatDiv {
   display: none;
   position: fixed;
@@ -244,13 +245,29 @@ input[type="file"] {
   padding: 10px;
   overflow-y: auto;
   background-color: #ECE5DD;
+  display: flex;
+  flex-direction: column;
 }
 
-#chatDiv input, #chatDiv button {
+#chatDiv div input {
+  width: calc(100% - 60px);
+  border: 1px solid #ccc;
+  border-radius: 20px;
   padding: 8px;
-  margin: 4px;
 }
 
+#chatDiv div button {
+  width: 50px;
+  border-radius: 20px;
+  background-color: #25D366;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  margin-left: 5px;
+}
+
+/* Burbujas de chat */
 .mensaje {
   margin-bottom: 10px;
   display: flex;
@@ -264,15 +281,21 @@ input[type="file"] {
   word-wrap: break-word;
 }
 
+.mensaje-propio {
+  justify-content: flex-end;
+}
+
 .mensaje-propio .burbuja {
   background-color: #DCF8C6;
-  margin-left: auto;
   text-align: right;
+}
+
+.mensaje-otro {
+  justify-content: flex-start;
 }
 
 .mensaje-otro .burbuja {
   background-color: #fff;
-  margin-right: auto;
   text-align: left;
 }
 
@@ -295,21 +318,6 @@ input[type="file"] {
 .punto.rojo { color: red; }
 .punto.verde { color: green; }
 
-#chatDiv div input {
-  width: calc(100% - 60px);
-  border: 1px solid #ccc;
-  border-radius: 20px;
-}
-
-#chatDiv div button {
-  width: 50px;
-  border-radius: 20px;
-  background-color: #25D366;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-
 /* ---------- Responsive ---------- */
 @media (max-width: 600px) {
   .tarjeta-login {
@@ -320,6 +328,7 @@ input[type="file"] {
     font-size: 14px;
   }
 }
+
 /* Tarjeta subir archivo */
 #uploadCard {
   text-align: center;
@@ -344,6 +353,7 @@ input[type="file"] {
   border-radius: 10px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
+
 .archivoItem button {
   margin-left: 5px;
 }

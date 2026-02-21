@@ -67,11 +67,11 @@ if (menuToggle && sidebar) {
 
 function cargarMenuLateral() {
   const departamentos = [
-    { nombre: "Direccion", url: "/departamentos/direccion.html" },
-    { nombre: "Economia", url: "/departamentos/economia.html" },
-    { nombre: "Produccion", url: "/departamentos/produccion.html" },
-    { nombre: "Comercial", url: "/departamentos/comercial.html" },
-    { nombre: "Recursos Humanos", url: "/departamentos/rrhh.html" }
+    { nombre: "Direccion", url: "departamentos/direccion.html" },
+    { nombre: "Economia", url: "departamentos/economia.html" },
+    { nombre: "Produccion", url: "departamentos/produccion.html" },
+    { nombre: "Comercial", url: "departamentos/comercial.html" },
+    { nombre: "Recursos Humanos", url: "departamentos/rrhh.html" }
   ];
 
   sidebarMenu.innerHTML = "";

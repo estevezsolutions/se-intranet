@@ -1,104 +1,145 @@
-import { auth } from '../firebase-config.js';
+import { auth, db, storage } from '../firebase-config.js';
+import { collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-// ------------------- Sidebar -------------------
-const menuToggle = document.getElementById("menuToggle");
-const sidebar = document.getElementById("sidebar");
-const sidebarMenu = document.getElementById("sidebarMenu");
+document.addEventListener('DOMContentLoaded', () => {
 
-// Lista de departamentos para el menú lateral
-const departamentos = [
-  { nombre: "Dirección", url: "direccion.html" },
-  { nombre: "Economía", url: "economia.html" },
-  { nombre: "Producción", url: "produccion.html" },
-  { nombre: "Comercial", url: "comercial.html" },
-  { nombre: "Recursos Humanos", url: "rrhh.html" }
-];
+  // ---------------- Sidebar ----------------
+  const menuToggle = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+  const sidebarMenu = document.getElementById("sidebarMenu");
 
-// Función para cargar menú lateral
-function cargarMenuLateral() {
-  sidebarMenu.innerHTML = "";
-  departamentos.forEach(depto => {
-    const li = document.createElement("li");
-    li.textContent = depto.nombre;
-    li.addEventListener("click", () => {
-      window.location.href = depto.url;
-    });
-    sidebarMenu.appendChild(li);
-  });
-}
+  const departamentos = [
+    { nombre: "Dirección", url: "/departamentos/direccion.html" },
+    { nombre: "Economía", url: "/departamentos/economia.html" },
+    { nombre: "Producción", url: "/departamentos/produccion.html" },
+    { nombre: "Comercial", url: "/departamentos/comercial.html" },
+    { nombre: "Recursos Humanos", url: "/departamentos/rrhh.html" }
+  ];
 
-// Activar menú lateral
-if(menuToggle && sidebar){
-  menuToggle.addEventListener("click", ()=>{ sidebar.classList.toggle("show"); });
-}
-
-cargarMenuLateral();
-
-// ------------------- Acordeones -------------------
-const accordions = document.querySelectorAll('.accordion');
-accordions.forEach(acc => {
-  const header = acc.querySelector('.accordion-header');
-  const content = acc.querySelector('.accordion-content');
-  if(header && content){
-    header.addEventListener('click', () => {
-      content.style.display = content.style.display === "block" ? "none" : "block";
+  function cargarMenuLateral() {
+    sidebarMenu.innerHTML = "";
+    departamentos.forEach(depto => {
+      const li = document.createElement("li");
+      li.textContent = depto.nombre;
+      li.addEventListener("click", () => {
+        window.location.href = depto.url;
+      });
+      sidebarMenu.appendChild(li);
     });
   }
-});
 
-// ------------------- Manejo de archivos locales -------------------
-const fileInput = document.createElement('input');
-fileInput.type = 'file';
-fileInput.style.display = 'none';
-document.body.appendChild(fileInput);
+  if(menuToggle && sidebar){
+    menuToggle.addEventListener("click", () => sidebar.classList.toggle("show"));
+  }
 
-// IDs de contenedores por tarjeta
-const contenedores = [
-  "facturasEmitidas",
-  "facturasRecibidas",
-  "nominas",
-  "inventario",
-  "otrosDocumentos"
-];
+  cargarMenuLateral();
 
-// Función para crear la vista de un archivo subido
-function agregarArchivoLocal(nombreArchivo, containerId) {
-  const container = document.getElementById(containerId);
-  if(!container) return;
-
-  const archivoDiv = document.createElement('div');
-  archivoDiv.classList.add('archivoItem');
-
-  const botones = `
-    <button onclick="window.open('${nombreArchivo}','_blank')">Abrir</button>
-    <button onclick="descargarArchivo('${nombreArchivo}','${nombreArchivo}')">Descargar</button>
-  `;
-
-  archivoDiv.innerHTML = `<span>${nombreArchivo}</span>${botones}`;
-  container.appendChild(archivoDiv);
-}
-
-// Descargar archivo local
-window.descargarArchivo = (url, nombre) => {
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = nombre;
-  a.click();
-};
-
-// Botones de agregar archivo
-const agregarBotones = document.querySelectorAll('.agregarArchivo');
-agregarBotones.forEach((btn, idx)=>{
-  const containerId = contenedores[idx];
-  btn.addEventListener('click', ()=>{
-    fileInput.click();
-    fileInput.onchange = () => {
-      if(fileInput.files.length > 0){
-        const file = fileInput.files[0];
-        // Crear objeto URL temporal para abrirlo en la web
-        const url = URL.createObjectURL(file);
-        agregarArchivoLocal(url, containerId);
-      }
-    };
+  // ---------------- Acordeones ----------------
+  const accordions = document.querySelectorAll('.accordion');
+  accordions.forEach(acc => {
+    const header = acc.querySelector('.accordion-header');
+    const content = acc.querySelector('.accordion-content');
+    if(header && content){
+      header.addEventListener('click', () => {
+        content.style.display = content.style.display === "block" ? "none" : "block";
+      });
+    }
   });
+
+  // ---------------- Descargar archivo ----------------
+  window.descargarArchivo = (url, nombre) => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nombre;
+    a.click();
+  };
+
+  // ---------------- Función para cargar archivos desde Firestore ----------------
+  async function cargarArchivos(carpetaId, containerId){
+    const container = document.getElementById(containerId);
+    if(!container) return;
+    container.innerHTML = "";
+
+    const snapshot = await getDocs(collection(db, "departamentos", "economia", carpetaId));
+    snapshot.forEach(docItem => {
+      const data = docItem.data();
+      const archivoDiv = document.createElement("div");
+      archivoDiv.classList.add("archivoItem");
+
+      // Botones para todos
+      let botones = `
+        <button onclick="window.open('${data.url}','_blank')">Abrir</button>
+        <button onclick="descargarArchivo('${data.url}','${data.nombre}')">Descargar</button>
+      `;
+
+      // Solo admin o usuario autorizado puede borrar
+      const email = auth.currentUser?.email;
+      if(email === "economica@sestevez.com" || email === "administrador@sestevez.com"){
+        botones += `<button onclick="borrarArchivo('${carpetaId}','${docItem.id}','${data.nombre}')">Borrar</button>`;
+      }
+
+      archivoDiv.innerHTML = `<span>${data.nombre}</span>${botones}`;
+      container.appendChild(archivoDiv);
+    });
+  }
+
+  // ---------------- Borrar archivo ----------------
+  window.borrarArchivo = async (carpetaId, docId, nombreArchivo) => {
+    if(!confirm(`¿Eliminar ${nombreArchivo}?`)) return;
+    try {
+      await deleteDoc(doc(db, "departamentos", "economia", carpetaId, docId));
+      const storageRef = ref(storage, `economia/${carpetaId}/${nombreArchivo}`);
+      await deleteObject(storageRef);
+      cargarArchivos(carpetaId, carpetaId);
+    } catch(e) {
+      alert("Error al eliminar archivo: " + e.message);
+    }
+  };
+
+  // ---------------- Botones de agregar archivo ----------------
+  const agregarBotones = document.querySelectorAll('.agregarArchivo');
+  const fileInput = document.getElementById('fileInput');
+
+  const carpetas = [
+    "facturasEmitidas",
+    "facturasRecibidas",
+    "nominas",
+    "inventario",
+    "otrosDocumentos"
+  ];
+
+  agregarBotones.forEach((btn, idx) => {
+    btn.addEventListener('click', () => {
+      fileInput.click();
+
+      fileInput.onchange = async () => {
+        if(fileInput.files.length === 0) return;
+        const file = fileInput.files[0];
+
+        const carpetaId = carpetas[idx];
+
+        // Subir archivo a Storage
+        const storageRef = ref(storage, `economia/${carpetaId}/${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        // Guardar metadatos en Firestore
+        await addDoc(collection(db, "departamentos", "economia", carpetaId), {
+          nombre: file.name,
+          url
+        });
+
+        // Recargar archivos
+        cargarArchivos(carpetaId, carpetaId);
+
+        // Limpiar input
+        fileInput.value = '';
+      };
+    });
+  });
+
+  // ---------------- Cargar archivos inicial ----------------
+  carpetas.forEach(c => cargarArchivos(c, c));
+
 });

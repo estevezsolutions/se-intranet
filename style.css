@@ -43,7 +43,7 @@ header h2 {
   position: absolute;
   left: 15px;
   top: 15px;
-  display: none; /* Se muestra solo después de login */
+  display: none;
 }
 
 /* ---------- Footer ---------- */
@@ -134,14 +134,15 @@ footer {
   color: #fff;
 }
 
-/* ---------- Contenido principal ---------- */
+/* ---------- Contenido principal (AJUSTADO) ---------- */
 main {
   margin-top: 60px;
+  margin-bottom: 40px; /* evita que el footer lo tape */
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 20px;
+  align-items: flex-start; /* ya no lo fuerza al centro vertical */
+  padding: 40px 20px;
   flex-direction: column;
 }
 
@@ -184,11 +185,12 @@ main {
     font-size: 22px;
   }
 }
+
 /* ---------- Tarjetas acordeón ---------- */
 .tarjeta-departamento {
-  width: 90%;
+  width: 100%;
   max-width: 800px;
-  margin: 40px auto;
+  margin: 0 auto;
 }
 
 .accordion {

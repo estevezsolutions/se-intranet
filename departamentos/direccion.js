@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let carpetaId;
         if(idx === 0) carpetaId = "documentosEmpresa";
         else if(idx === 1) carpetaId = "actas";
-        else carpetaId = "otrosDocumentos";
+        else if(idx === 2) carpetaId = "otrosDocumentos";
 
         // Subir archivo a Storage
         const storageRef = ref(storage, `direccion/${carpetaId}/${file.name}`);

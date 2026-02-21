@@ -30,7 +30,7 @@ header {
   z-index: 10;
 }
 
-header h2 {
+header h2, header h1 {
   color: #ff6f00;
   font-weight: 700;
 }
@@ -134,14 +134,14 @@ footer {
   color: #fff;
 }
 
-/* ---------- Contenido principal (AJUSTADO) ---------- */
+/* ---------- Contenido principal ---------- */
 main {
   margin-top: 60px;
-  margin-bottom: 40px; /* evita que el footer lo tape */
+  margin-bottom: 40px;
   flex: 1;
   display: flex;
-  justify-content: center;
-  align-items: flex-start; /* ya no lo fuerza al centro vertical */
+  justify-content: flex-start; /* tarjetas arriba */
+  align-items: center;
   padding: 40px 20px;
   flex-direction: column;
 }
@@ -165,25 +165,6 @@ main {
 
 .tarjeta-bienvenida p {
   font-size: 16px;
-}
-
-/* ---------- Responsive ---------- */
-@media (max-width: 600px) {
-  .tarjeta-login {
-    width: 90%;
-    height: auto;
-    padding: 20px;
-  }
-  .tarjeta-bienvenida {
-    width: 90%;
-    padding: 30px 20px;
-  }
-  #sidebar {
-    width: 180px;
-  }
-  #menuToggle {
-    font-size: 22px;
-  }
 }
 
 /* ---------- Tarjetas acordeón ---------- */
@@ -215,6 +196,7 @@ main {
 .accordion-content {
   padding: 15px 20px;
   background-color: #f7f7f7;
+  display: none; /* oculto inicialmente */
 }
 
 .archivoItem {
@@ -248,4 +230,23 @@ main {
   margin-top: 10px;
   font-size: 16px;
   padding: 8px 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 600px) {
+  .tarjeta-login {
+    width: 90%;
+    height: auto;
+    padding: 20px;
+  }
+  .tarjeta-bienvenida {
+    width: 90%;
+    padding: 30px 20px;
+  }
+  #sidebar {
+    width: 180px;
+  }
+  #menuToggle {
+    font-size: 22px;
+  }
 }

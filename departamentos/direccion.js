@@ -103,3 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
   cargarArchivos("otrosDocumentos","otrosDocumentos");
 
 });
+// Cargar archivos inicial
+cargarArchivos("documentosEmpresa","documentosEmpresa");
+cargarArchivos("actas","actas");           // <-- nueva línea
+cargarArchivos("otrosDocumentos","otrosDocumentos");

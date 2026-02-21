@@ -1,131 +1,94 @@
 import { auth } from '../firebase-config.js';
 
-document.addEventListener("DOMContentLoaded", () => {
+// Sidebar
+const menuToggle = document.getElementById("menuToggle");
+const sidebar = document.getElementById("sidebar");
+const sidebarMenu = document.getElementById("sidebarMenu");
 
-  // ------------------- Elementos DOM -------------------
-  const menuToggle = document.getElementById("menuToggle");
-  const sidebar = document.getElementById("sidebar");
-  const sidebarMenu = document.getElementById("sidebarMenu");
-  const agregarBotones = document.querySelectorAll('.agregarArchivo');
-  const fileInput = document.getElementById("fileInput");
+const departamentos = [
+  {nombre:"Direccion", url:"direccion.html"},
+  {nombre:"Economia", url:"economia.html"},
+  {nombre:"Produccion", url:"produccion.html"},
+  {nombre:"Comercial", url:"comercial.html"},
+  {nombre:"Recursos Humanos", url:"rrhh.html"}
+];
 
-  // ------------------- Menú lateral -------------------
-  const departamentos = [
-    { nombre: "Direccion", url: "direccion.html" },
-    { nombre: "Economia", url: "economia.html" },
-    { nombre: "Produccion", url: "produccion.html" },
-    { nombre: "Comercial", url: "comercial.html" },
-    { nombre: "Recursos Humanos", url: "rrhh.html" }
-  ];
-
-  function cargarMenuLateral() {
-    if(!sidebarMenu) return;
-    sidebarMenu.innerHTML = "";
-    departamentos.forEach(depto => {
-      const li = document.createElement("li");
-      li.textContent = depto.nombre;
-      li.addEventListener("click", () => {
-        window.location.href = depto.url;
-      });
-      sidebarMenu.appendChild(li);
+function cargarMenuLateral(){
+  sidebarMenu.innerHTML = "";
+  departamentos.forEach(depto => {
+    const li = document.createElement("li");
+    li.textContent = depto.nombre;
+    li.addEventListener("click", () => {
+      window.location.href = depto.url;
     });
-  }
-
-  if(menuToggle && sidebar){
-    menuToggle.addEventListener("click", () => { 
-      sidebar.classList.toggle("show"); 
-    });
-  }
-
-  cargarMenuLateral();
-
-  // ------------------- Acordeones -------------------
-  const accordions = document.querySelectorAll('.accordion');
-  accordions.forEach(acc => {
-    const header = acc.querySelector('.accordion-header');
-    const content = acc.querySelector('.accordion-content');
-    if(header && content){
-      header.addEventListener('click', () => {
-        content.style.display = content.style.display === "block" ? "none" : "block";
-      });
-    }
+    sidebarMenu.appendChild(li);
   });
+}
 
-  // ------------------- Manejo de archivos locales -------------------
-  // Creamos un objeto por cada tarjeta para almacenar los archivos en memoria
-  const archivosPorTarjeta = {
-    facturasEmitidas: [],
-    facturasRecibidas: [],
-    nominas: [],
-    inventario: [],
-    otrosDocumentos: []
+if(menuToggle && sidebar){
+  menuToggle.addEventListener("click", ()=>{ sidebar.classList.toggle("show"); });
+}
+
+cargarMenuLateral();
+
+// --------- Función para manejar archivos locales ----------
+const fileInput = document.createElement('input');
+fileInput.type = 'file';
+fileInput.style.display = 'none';
+document.body.appendChild(fileInput);
+
+function agregarArchivo(containerId, carpetaDriveUrl){
+  const container = document.getElementById(containerId);
+  if(!container) return;
+
+  fileInput.onchange = () => {
+    if(fileInput.files.length === 0) return;
+
+    const file = fileInput.files[0];
+
+    // Crear div del archivo
+    const archivoDiv = document.createElement('div');
+    archivoDiv.classList.add('archivoItem');
+
+    const abrirBtn = document.createElement('button');
+    abrirBtn.textContent = "Abrir";
+    abrirBtn.onclick = () => {
+      window.open(URL.createObjectURL(file), "_blank");
+    };
+
+    const descargarBtn = document.createElement('button');
+    descargarBtn.textContent = "Descargar";
+    descargarBtn.onclick = () => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(file);
+      a.download = file.name;
+      a.click();
+    };
+
+    archivoDiv.appendChild(document.createTextNode(file.name));
+    archivoDiv.appendChild(abrirBtn);
+    archivoDiv.appendChild(descargarBtn);
+
+    // Solo mostrar botón borrar si es usuario autorizado
+    const email = auth.currentUser?.email;
+    if(email === "arquitecto@sestevez.com" || email === "administrador@sestevez.com"){
+      const borrarBtn = document.createElement('button');
+      borrarBtn.textContent = "Borrar";
+      borrarBtn.onclick = () => { archivoDiv.remove(); };
+      archivoDiv.appendChild(borrarBtn);
+    }
+
+    container.appendChild(archivoDiv);
   };
 
-  function renderArchivos(tarjetaId){
-    const container = document.getElementById(tarjetaId);
-    if(!container) return;
-    container.innerHTML = "";
+  fileInput.click();
+}
 
-    archivosPorTarjeta[tarjetaId].forEach((archivo, index) => {
-      const archivoDiv = document.createElement("div");
-      archivoDiv.classList.add("archivoItem");
-
-      let botones = `
-        <button onclick="window.open('${archivo.url}','_blank')">Abrir</button>
-        <button onclick="descargarArchivo('${archivo.url}','${archivo.name}')">Descargar</button>
-      `;
-
-      // Mostrar Borrar solo para admin o autorizado
-      const email = auth.currentUser?.email;
-      const autorizados = ["administrador@sestevez.com", "economica@sestevez.com"];
-      if(autorizados.includes(email)){
-        botones += `<button class="borrarArchivo" data-tarjeta="${tarjetaId}" data-index="${index}">Borrar</button>`;
-      }
-
-      archivoDiv.innerHTML = `<span>${archivo.name}</span>${botones}`;
-      container.appendChild(archivoDiv);
-    });
-
-    // Agregar listener a borrar
-    const borrarBtns = container.querySelectorAll('.borrarArchivo');
-    borrarBtns.forEach(btn=>{
-      btn.addEventListener('click', (e)=>{
-        const tId = e.target.dataset.tarjeta;
-        const idx = parseInt(e.target.dataset.index);
-        archivosPorTarjeta[tId].splice(idx,1);
-        renderArchivos(tId);
-      });
-    });
-  }
-
-  window.descargarArchivo = (url, nombre) => {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = nombre;
-    a.click();
-  };
-
-  // ------------------- Botones agregar archivo -------------------
-  agregarBotones.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if(fileInput) fileInput.click();
-      // Guardar en qué tarjeta se hizo clic
-      fileInput.dataset.tarjeta = btn.previousElementSibling.id;
-    });
+// Botones "Agregar archivo"
+document.querySelectorAll('.agregarArchivo').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const parent = btn.closest('.accordion-content');
+    const container = parent.querySelector('div');
+    agregarArchivo(container.id);
   });
-
-  fileInput.addEventListener('change', () => {
-    const tarjetaId = fileInput.dataset.tarjeta;
-    if(fileInput.files.length > 0 && tarjetaId){
-      Array.from(fileInput.files).forEach(file => {
-        // Crear URL temporal para abrir el archivo
-        const fileURL = URL.createObjectURL(file);
-        archivosPorTarjeta[tarjetaId].push({name: file.name, url: fileURL});
-      });
-      renderArchivos(tarjetaId);
-      // Limpiar input para poder agregar mismos archivos después
-      fileInput.value = "";
-    }
-  });
-
 });

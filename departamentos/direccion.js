@@ -107,3 +107,63 @@ document.addEventListener("DOMContentLoaded", () => {
 cargarArchivos("documentosEmpresa","documentosEmpresa");
 cargarArchivos("actas","actas");           // <-- nueva línea
 cargarArchivos("otrosDocumentos","otrosDocumentos");
+// ------------------- Selector de archivos local -------------------
+const fileInput = document.createElement('input');
+fileInput.type = 'file';
+fileInput.style.display = 'none';
+document.body.appendChild(fileInput);
+
+// Función para agregar archivo a un contenedor específico
+function agregarArchivoLocal(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  fileInput.onchange = () => {
+    if (fileInput.files.length > 0) {
+      const archivo = fileInput.files[0];
+
+      // Crear elemento para mostrar archivo
+      const archivoDiv = document.createElement('div');
+      archivoDiv.classList.add('archivoItem');
+
+      const span = document.createElement('span');
+      span.textContent = archivo.name;
+
+      // Botón abrir localmente (solo descarga temporal)
+      const abrirBtn = document.createElement('button');
+      abrirBtn.textContent = 'Abrir';
+      abrirBtn.onclick = () => {
+        const url = URL.createObjectURL(archivo);
+        window.open(url, '_blank');
+      };
+
+      // Botón "Descargar" (descarga inmediata)
+      const descargarBtn = document.createElement('button');
+      descargarBtn.textContent = 'Descargar';
+      descargarBtn.onclick = () => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(archivo);
+        a.download = archivo.name;
+        a.click();
+      };
+
+      archivoDiv.appendChild(span);
+      archivoDiv.appendChild(abrirBtn);
+      archivoDiv.appendChild(descargarBtn);
+      container.appendChild(archivoDiv);
+    }
+
+    // Limpiar input para poder volver a seleccionar mismo archivo
+    fileInput.value = '';
+  };
+
+  fileInput.click();
+}
+
+// ------------------- Botones + Agregar archivo -------------------
+document.querySelectorAll('.agregarArchivo').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const container = btn.previousElementSibling.id; // contenedor correspondiente
+    agregarArchivoLocal(container);
+  });
+});

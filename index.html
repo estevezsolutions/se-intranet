@@ -5,10 +5,12 @@
   <title>Intranet Soluciones Estevéz S.U.R.L.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="../style.css">
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="style.css">
 
-  <script type="module" src="../firebase-config.js"></script>
-  <script type="module" src="../main.js"></script>
+  <!-- Firebase y JS principal -->
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="main.js"></script>
 </head>
 <body>
 
@@ -34,14 +36,14 @@
 
     <!-- Contenido visible solo tras login -->
     <div id="contenidoDiv" style="display:none; width: 100%;">
-      
+
       <!-- Cartel de bienvenida -->
       <div id="bienvenidaDiv" class="tarjeta-bienvenida">
         <h2 id="bienvenida"></h2>
         <p>Bienvenido a la intranet de Soluciones Estevéz S.U.R.L.</p>
       </div>
 
-      <!-- Contenido de departamentos -->
+      <!-- Contenido de departamentos (ejemplo, se puede usar en otras páginas) -->
       <div id="documentosDiv" style="display:none;">
         <div id="depto_Direccion" class="departamentoDiv">
           <h3>Dirección</h3>
@@ -59,6 +61,7 @@
           <h3>Recursos Humanos</h3>
         </div>
       </div>
+
     </div>
   </main>
 

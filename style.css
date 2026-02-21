@@ -71,6 +71,7 @@ footer {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 100px auto;
 }
 
 .tarjeta-login h3 {
@@ -141,219 +142,45 @@ main {
   justify-content: center;
   align-items: center;
   padding: 20px;
-  transition: margin-left 0.3s;
-}
-
-/* ---------- Tarjetas ---------- */
-.tarjeta {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  padding: 20px;
-  margin-bottom: 25px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.tarjeta:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-
-.tarjeta h4 {
-  margin-bottom: 15px;
-  color: #ff6f00;
-}
-
-/* ---------- Botones ---------- */
-.boton {
-  padding: 10px 18px;
-  background-color: #ff6f00;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.3s ease;
-  margin-top: 10px;
-}
-
-.boton:hover {
-  background-color: #e65a00;
-}
-
-/* ---------- Input de archivos ---------- */
-input[type="file"] {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  margin-bottom: 15px;
-  width: 100%;
-}
-
-/* Botón flotante */
-#chatButton {
-  position: fixed;
-  bottom: 50px;
-  right: 20px;
-  background-color: #ff6f00;
-  color: #fff;
-  padding: 15px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 18px;
-  z-index: 10;
-}
-
-#chatBadge {
-  background: red;
-  border-radius: 50%;
-  padding: 2px 6px;
-  font-size: 12px;
-  position: absolute;
-  top: -5px;
-  right: -5px;
-}
-
-/* ---------- Chat flotante estilo WhatsApp ---------- */
-#chatDiv {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 300px;
-  max-height: 400px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 1000;
-}
-
-#chatHeader {
-  background-color: #075E54;
-  color: #fff;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#chatMensajes {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-  background-color: #ECE5DD;
-  display: flex;
   flex-direction: column;
 }
 
-#chatDiv div input {
-  width: calc(100% - 60px);
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  padding: 8px;
-}
-
-#chatDiv div button {
-  width: 50px;
-  border-radius: 20px;
-  background-color: #25D366;
+/* ---------- Tarjeta bienvenida ---------- */
+.tarjeta-bienvenida {
+  background: linear-gradient(135deg, #ff6f00, #ffab40);
   color: #fff;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  margin-left: 5px;
+  padding: 40px 60px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  text-align: center;
+  max-width: 500px;
+  margin: 40px auto;
 }
 
-/* Burbujas de chat */
-.mensaje {
+.tarjeta-bienvenida h2 {
+  font-size: 28px;
   margin-bottom: 10px;
-  display: flex;
 }
 
-.mensaje .burbuja {
-  max-width: 75%;
-  padding: 8px 12px;
-  border-radius: 12px;
-  position: relative;
-  word-wrap: break-word;
+.tarjeta-bienvenida p {
+  font-size: 16px;
 }
-
-.mensaje-propio {
-  justify-content: flex-end;
-}
-
-.mensaje-propio .burbuja {
-  background-color: #DCF8C6;
-  text-align: right;
-}
-
-.mensaje-otro {
-  justify-content: flex-start;
-}
-
-.mensaje-otro .burbuja {
-  background-color: #fff;
-  text-align: left;
-}
-
-.mensaje .hora {
-  font-size: 10px;
-  color: #888;
-  margin-top: 2px;
-}
-
-.mensaje .estado {
-  font-size: 10px;
-  margin-left: 5px;
-}
-
-.punto {
-  font-size: 12px;
-  margin: 0 1px;
-}
-
-.punto.rojo { color: red; }
-.punto.verde { color: green; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 600px) {
   .tarjeta-login {
-    width: 250px;
-    height: 250px;
+    width: 90%;
+    height: auto;
+    padding: 20px;
   }
-  #loginDiv button, .boton {
-    font-size: 14px;
+  .tarjeta-bienvenida {
+    width: 90%;
+    padding: 30px 20px;
   }
-}
-
-/* Tarjeta subir archivo */
-#uploadCard {
-  text-align: center;
-}
-
-#uploadCard button {
-  font-size: 24px;
-  padding: 15px 20px;
-}
-
-#archivosList {
-  margin-top: 20px;
-}
-
-.archivoItem {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #fff;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-}
-
-.archivoItem button {
-  margin-left: 5px;
+  #sidebar {
+    width: 180px;
+  }
+  #menuToggle {
+    font-size: 22px;
+  }
 }

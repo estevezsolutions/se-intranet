@@ -1,4 +1,6 @@
-import { auth } from '../firebase-config.js';
+import { auth, db, storage } from '../firebase-config.js';
+import { collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -53,47 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     a.click();
   };
 
-  // ---------------- Archivos desde Google Drive ----------------
-  // Rutas de carpetas en Drive (con enlaces públicos)
-  const archivosDrive = {
-    "documentosEmpresa": [
-      { nombre: "Manual de calidad.pdf", url: "https://drive.google.com/uc?export=download&id=TU_ID_1" },
-      { nombre: "Reglamento interno.pdf", url: "https://drive.google.com/uc?export=download&id=TU_ID_2" }
-    ],
-    "actas": [
-      { nombre: "Acta_2026_01.pdf", url: "https://drive.google.com/uc?export=download&id=TU_ID_3" }
-    ],
-    "otrosDocumentos": [
-      { nombre: "Formulario_solicitud.docx", url: "https://drive.google.com/uc?export=download&id=TU_ID_4" }
-    ]
-  };
-
-  function cargarArchivos(carpetaId, containerId){
-    const container = document.getElementById(containerId);
-    if(!container) return;
-    container.innerHTML = "";
-
-    const archivos = archivosDrive[carpetaId] || [];
-    archivos.forEach(file => {
-      const archivoDiv = document.createElement("div");
-      archivoDiv.classList.add("archivoItem");
-
-      let botones = `
-        <button onclick="window.open('${file.url}','_blank')">Abrir</button>
-        <button onclick="descargarArchivo('${file.url}','${file.nombre}')">Descargar</button>
-      `;
-
-      // Botón Borrar solo como placeholder (no elimina Drive)
-      const email = auth.currentUser?.email;
-      if(email === "arquitecto@sestevez.com" || email === "administrador@sestevez.com"){
-        botones += `<button onclick="alert('El borrado se realiza directamente en Google Drive')">Borrar</button>`;
-      }
-
-      archivoDiv.innerHTML = `<span>${file.nombre}</span>${botones}`;
-      container.appendChild(archivoDiv);
-    });
-  }
-
   // ---------------- Botones de agregar archivo ----------------
   const agregarBotones = document.querySelectorAll('.agregarArchivo');
   const fileInput = document.getElementById('fileInput');
@@ -102,30 +63,24 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       fileInput.click();
 
-      fileInput.onchange = () => {
+      fileInput.onchange = async () => {
         if(fileInput.files.length === 0) return;
         const file = fileInput.files[0];
 
-        // Determinar carpeta según índice
+        // Determinar carpeta según el índice del botón
         let carpetaId;
         if(idx === 0) carpetaId = "documentosEmpresa";
         else if(idx === 1) carpetaId = "actas";
         else carpetaId = "otrosDocumentos";
 
-        // Solo agregamos visualmente; subida manual a Drive
-        const url = URL.createObjectURL(file);
-        archivosDrive[carpetaId].push({ nombre: file.name, url });
-        cargarArchivos(carpetaId, carpetaId);
+        // --- Aquí debes agregar tu código para subir a Google Drive ---
+        // Ejemplo:
+        // await subirArchivoDrive(carpetaId, file);
 
         // Limpiar input
         fileInput.value = '';
       };
     });
   });
-
-  // ---------------- Cargar archivos inicial ----------------
-  cargarArchivos("documentosEmpresa","documentosEmpresa");
-  cargarArchivos("actas","actas");
-  cargarArchivos("otrosDocumentos","otrosDocumentos");
 
 });

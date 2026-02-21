@@ -2,56 +2,65 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Departamento de Dirección - Soluciones Estevéz S.U.R.L.</title>
+  <title>Dirección - Intranet Soluciones Estévez</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Subir un nivel porque está dentro de /departamentos -->
   <link rel="stylesheet" href="../style.css">
+
   <script type="module" src="../firebase-config.js"></script>
-  <script type="module" src="direccion.js"></script>
+  <script type="module" src="../main.js"></script>
 </head>
+
 <body>
 
-  <!-- Encabezado fijo -->
-  <header>
-    <button id="menuToggle">☰</button>
-    <h2>Dirección</h2>
-  </header>
+<header class="topbar">
+  <button id="menuToggle">☰</button>
+  <h1>Dirección</h1>
+</header>
 
-  <!-- Menú lateral desplegable -->
-  <aside id="sidebar">
-    <ul id="sidebarMenu"></ul>
-  </aside>
+<aside id="sidebar">
+  <ul id="sidebarMenu"></ul>
+</aside>
 
-  <main>
-    <!-- Tarjeta Documentos -->
-    <div class="tarjeta-departamento">
-      <div class="accordion">
-        <div class="accordion-header">
-          <h3>Documentos de la empresa</h3>
-        </div>
-        <div class="accordion-content" style="display:none;">
-          <div id="documentosEmpresa" class="archivos-lista">
-            <!-- Archivos dinámicos se agregan aquí -->
-          </div>
-          <button class="boton agregarArchivo">+ Añadir archivo</button>
-        </div>
-      </div>
+<main class="contenido">
 
-      <div class="accordion">
-        <div class="accordion-header">
-          <h3>Otros documentos</h3>
-        </div>
-        <div class="accordion-content" style="display:none;">
-          <div id="otrosDocumentos" class="archivos-lista">
-            <!-- Archivos dinámicos se agregan aquí -->
-          </div>
-          <button class="boton agregarArchivo">+ Añadir archivo</button>
-        </div>
-      </div>
-    </div>
-  </main>
+  <section class="card">
+    <h2>Documentos de la empresa</h2>
+    <button class="btnAgregar">Agregar archivo</button>
+  </section>
 
-  <footer>
-    <p>© 2026 Soluciones Estevéz S.U.R.L.</p>
-  </footer>
+  <section class="card">
+    <h2>Otros documentos</h2>
+    <button class="btnAgregar">Agregar archivo</button>
+  </section>
+
+</main>
+
+<footer>
+  © 2026 Soluciones Estévez S.U.R.L.
+</footer>
+
+<!-- Input oculto para seleccionar archivo -->
+<input type="file" id="fileInput" style="display:none">
+
+<!-- Script SOLO para activar los botones -->
+<script>
+  const botones = document.querySelectorAll(".btnAgregar");
+  const fileInput = document.getElementById("fileInput");
+
+  botones.forEach(boton => {
+    boton.addEventListener("click", () => {
+      fileInput.click();
+    });
+  });
+
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files.length > 0) {
+      alert("Archivo seleccionado: " + fileInput.files[0].name);
+    }
+  });
+</script>
 
 </body>
 </html>

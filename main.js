@@ -42,7 +42,7 @@ async function login() {
       "comercial@sestevez.com": "Comercial"
     };
     const nombre = nombresBienvenida[email] || email.split("@")[0];
-    if(bienvenida) bienvenida.textContent = "Bienvenido " + nombre;
+    if(bienvenida) bienvenida.textContent =nombre;
 
     // Mostrar menú lateral
     if(menuToggle) menuToggle.style.display = "block";
@@ -66,12 +66,12 @@ if(menuToggle && sidebar) {
 
 function cargarMenuLateral(){
   const departamentos = [
-    {nombre:"Direccion", url:"direccion.html"},
-    {nombre:"Economia", url:"economia.html"},
-    {nombre:"Produccion", url:"produccion.html"},
-    {nombre:"Comercial", url:"comercial.html"},
-    {nombre:"RecursosHumanos", url:"recursosh.html"}
-  ];
+    {nombre:"Direccion", url:"departamentos/direccion.html"},
+    {nombre:"Economia", url:"departamentos/economia.html"},
+    {nombre:"Produccion", url:"departamentos/produccion.html"},
+    {nombre:"Comercial", url:"departamentos/comercial.html"},
+    {nombre:"Recursos Humanos", url:"departamentos/rrhh.html"}
+];
 
   sidebarMenu.innerHTML = "";
 

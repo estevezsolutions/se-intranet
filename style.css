@@ -184,3 +184,66 @@ main {
     font-size: 22px;
   }
 }
+/* ---------- Tarjetas acordeón ---------- */
+.tarjeta-departamento {
+  width: 90%;
+  max-width: 800px;
+  margin: 40px auto;
+}
+
+.accordion {
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  padding: 15px 20px;
+  cursor: pointer;
+  background-color: #ff6f00;
+  color: #fff;
+}
+
+.accordion-header h3 {
+  margin: 0;
+}
+
+.accordion-content {
+  padding: 15px 20px;
+  background-color: #f7f7f7;
+}
+
+.archivoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.archivoItem button {
+  margin-left: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #ff6f00;
+  color: #fff;
+}
+
+.archivoItem button:hover {
+  background-color: #e65a00;
+}
+
+.agregarArchivo {
+  width: 100%;
+  margin-top: 10px;
+  font-size: 16px;
+  padding: 8px 0;
+}

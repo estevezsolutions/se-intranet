@@ -1,19 +1,21 @@
 import { auth } from '../firebase-config.js';
 
-// Sidebar
+// ------------------- Sidebar -------------------
 const menuToggle = document.getElementById("menuToggle");
 const sidebar = document.getElementById("sidebar");
 const sidebarMenu = document.getElementById("sidebarMenu");
 
+// Lista de departamentos para el menú lateral
 const departamentos = [
-  {nombre:"Direccion", url:"direccion.html"},
-  {nombre:"Economia", url:"economia.html"},
-  {nombre:"Produccion", url:"produccion.html"},
-  {nombre:"Comercial", url:"comercial.html"},
-  {nombre:"Recursos Humanos", url:"rrhh.html"}
+  { nombre: "Dirección", url: "direccion.html" },
+  { nombre: "Economía", url: "economia.html" },
+  { nombre: "Producción", url: "produccion.html" },
+  { nombre: "Comercial", url: "comercial.html" },
+  { nombre: "Recursos Humanos", url: "rrhh.html" }
 ];
 
-function cargarMenuLateral(){
+// Función para cargar menú lateral
+function cargarMenuLateral() {
   sidebarMenu.innerHTML = "";
   departamentos.forEach(depto => {
     const li = document.createElement("li");
@@ -25,70 +27,78 @@ function cargarMenuLateral(){
   });
 }
 
+// Activar menú lateral
 if(menuToggle && sidebar){
   menuToggle.addEventListener("click", ()=>{ sidebar.classList.toggle("show"); });
 }
 
 cargarMenuLateral();
 
-// --------- Función para manejar archivos locales ----------
+// ------------------- Acordeones -------------------
+const accordions = document.querySelectorAll('.accordion');
+accordions.forEach(acc => {
+  const header = acc.querySelector('.accordion-header');
+  const content = acc.querySelector('.accordion-content');
+  if(header && content){
+    header.addEventListener('click', () => {
+      content.style.display = content.style.display === "block" ? "none" : "block";
+    });
+  }
+});
+
+// ------------------- Manejo de archivos locales -------------------
 const fileInput = document.createElement('input');
 fileInput.type = 'file';
 fileInput.style.display = 'none';
 document.body.appendChild(fileInput);
 
-function agregarArchivo(containerId, carpetaDriveUrl){
+// IDs de contenedores por tarjeta
+const contenedores = [
+  "facturasEmitidas",
+  "facturasRecibidas",
+  "nominas",
+  "inventario",
+  "otrosDocumentos"
+];
+
+// Función para crear la vista de un archivo subido
+function agregarArchivoLocal(nombreArchivo, containerId) {
   const container = document.getElementById(containerId);
   if(!container) return;
 
-  fileInput.onchange = () => {
-    if(fileInput.files.length === 0) return;
+  const archivoDiv = document.createElement('div');
+  archivoDiv.classList.add('archivoItem');
 
-    const file = fileInput.files[0];
+  const botones = `
+    <button onclick="window.open('${nombreArchivo}','_blank')">Abrir</button>
+    <button onclick="descargarArchivo('${nombreArchivo}','${nombreArchivo}')">Descargar</button>
+  `;
 
-    // Crear div del archivo
-    const archivoDiv = document.createElement('div');
-    archivoDiv.classList.add('archivoItem');
-
-    const abrirBtn = document.createElement('button');
-    abrirBtn.textContent = "Abrir";
-    abrirBtn.onclick = () => {
-      window.open(URL.createObjectURL(file), "_blank");
-    };
-
-    const descargarBtn = document.createElement('button');
-    descargarBtn.textContent = "Descargar";
-    descargarBtn.onclick = () => {
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(file);
-      a.download = file.name;
-      a.click();
-    };
-
-    archivoDiv.appendChild(document.createTextNode(file.name));
-    archivoDiv.appendChild(abrirBtn);
-    archivoDiv.appendChild(descargarBtn);
-
-    // Solo mostrar botón borrar si es usuario autorizado
-    const email = auth.currentUser?.email;
-    if(email === "arquitecto@sestevez.com" || email === "administrador@sestevez.com"){
-      const borrarBtn = document.createElement('button');
-      borrarBtn.textContent = "Borrar";
-      borrarBtn.onclick = () => { archivoDiv.remove(); };
-      archivoDiv.appendChild(borrarBtn);
-    }
-
-    container.appendChild(archivoDiv);
-  };
-
-  fileInput.click();
+  archivoDiv.innerHTML = `<span>${nombreArchivo}</span>${botones}`;
+  container.appendChild(archivoDiv);
 }
 
-// Botones "Agregar archivo"
-document.querySelectorAll('.agregarArchivo').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const parent = btn.closest('.accordion-content');
-    const container = parent.querySelector('div');
-    agregarArchivo(container.id);
+// Descargar archivo local
+window.descargarArchivo = (url, nombre) => {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nombre;
+  a.click();
+};
+
+// Botones de agregar archivo
+const agregarBotones = document.querySelectorAll('.agregarArchivo');
+agregarBotones.forEach((btn, idx)=>{
+  const containerId = contenedores[idx];
+  btn.addEventListener('click', ()=>{
+    fileInput.click();
+    fileInput.onchange = () => {
+      if(fileInput.files.length > 0){
+        const file = fileInput.files[0];
+        // Crear objeto URL temporal para abrirlo en la web
+        const url = URL.createObjectURL(file);
+        agregarArchivoLocal(url, containerId);
+      }
+    };
   });
 });

@@ -11,7 +11,7 @@
 
   <!-- Encabezado fijo -->
   <header>
-    <button id="menuToggle" style="display:none;">☰</button>
+    <button id="menuToggle">☰</button>
     <h2>Soluciones Estevéz S.U.R.L.</h2>
   </header>
 
@@ -26,60 +26,38 @@
       <h3>Acceso a la intranet</h3>
       <input type="email" id="email" placeholder="Correo electrónico">
       <input type="password" id="password" placeholder="Contraseña">
-      <button onclick="login()">Entrar</button>
+      <button>Entrar</button>
     </div>
 
     <!-- Contenido visible solo tras login -->
     <div id="contenidoDiv" style="display:none; width: 100%;">
-      <h3 id="bienvenida"></h3>
+      
+      <!-- Cartel de bienvenida -->
+      <div id="bienvenidaDiv" class="tarjeta-bienvenida">
+        <h2 id="bienvenida"></h2>
+        <p>Bienvenido a la intranet de Soluciones Estevéz S.U.R.L.</p>
+      </div>
 
-      <div id="documentosDiv">
+      <!-- Contenido de departamentos -->
+      <div id="documentosDiv" style="display:none;">
         <div id="depto_Direccion" class="departamentoDiv">
           <h3>Dirección</h3>
-          <!-- Contenido de Dirección -->
         </div>
-
         <div id="depto_Economia" class="departamentoDiv">
           <h3>Economía</h3>
-          <!-- Contenido de Economía -->
         </div>
-
         <div id="depto_Produccion" class="departamentoDiv">
           <h3>Producción</h3>
-          <!-- Contenido de Producción -->
         </div>
-
         <div id="depto_Comercial" class="departamentoDiv">
           <h3>Comercial</h3>
-          <!-- Contenido de Comercial -->
         </div>
-
         <div id="depto_RecursosHumanos" class="departamentoDiv">
           <h3>Recursos Humanos</h3>
-          <!-- Contenido de Recursos Humanos -->
         </div>
       </div>
     </div>
   </main>
-
-  <!-- Botón flotante para abrir chat -->
-  <button id="chatButton" onclick="abrirChat()" style="display:none;">
-    💬
-    <span id="chatBadge">0</span>
-  </button>
-
-  <!-- Ventana del chat flotante estilo WhatsApp -->
-  <div id="chatDiv">
-    <div id="chatHeader">
-      <span>Chat</span>
-      <button onclick="cerrarChat()">✖</button>
-    </div>
-    <div id="chatMensajes"></div>
-    <div style="display:flex; align-items:center; padding:5px; background:#f0f0f0;">
-      <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." />
-      <button onclick="enviarMensaje()">Enviar</button>
-    </div>
-  </div>
 
   <!-- Footer fijo -->
   <footer>

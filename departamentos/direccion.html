@@ -26,7 +26,7 @@
   </aside>
 
   <main>
-    <!-- Tarjeta Documentos de la empresa -->
+    <!-- Documentos de la empresa -->
     <section class="tarjeta-departamento accordion">
       <div class="accordion-header"><h3>Documentos de la empresa</h3></div>
       <div class="accordion-content">
@@ -34,15 +34,17 @@
         <button class="agregarArchivo">+ Agregar archivo</button>
       </div>
     </section>
-<!-- Tarjeta Actas -->
-<section class="tarjeta-departamento accordion">
-  <div class="accordion-header"><h3>Actas</h3></div>
-  <div class="accordion-content">
-    <div id="actas"></div>
-    <button class="agregarArchivo">+ Agregar archivo</button>
-  </div>
-</section>
-    <!-- Tarjeta Otros documentos -->
+
+    <!-- Actas -->
+    <section class="tarjeta-departamento accordion">
+      <div class="accordion-header"><h3>Actas</h3></div>
+      <div class="accordion-content">
+        <div id="actas"></div>
+        <button class="agregarArchivo">+ Agregar archivo</button>
+      </div>
+    </section>
+
+    <!-- Otros documentos -->
     <section class="tarjeta-departamento accordion">
       <div class="accordion-header"><h3>Otros documentos</h3></div>
       <div class="accordion-content">
@@ -52,16 +54,10 @@
     </section>
   </main>
 
- <!-- Footer fijo -->
+  <!-- Footer fijo -->
   <footer>
     © 2026 Soluciones Estevéz S.U.R.L.
   </footer>
 
-  <!-- Input oculto para seleccionar archivo -->
-  <input type="file" id="fileInput" style="display:none">
-
-  <!-- Scripts al final del body -->
-  <script type="module" src="../firebase-config.js"></script>
-  <script type="module" src="direccion.js"></script>
 </body>
 </html>

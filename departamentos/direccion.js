@@ -140,4 +140,4 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarArchivos("actas","actas");
   cargarArchivos("otrosDocumentos","otrosDocumentos");
 
-});
+}); 

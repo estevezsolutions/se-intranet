@@ -1,169 +1,94 @@
-// direccion.js corregido
+import { auth } from '../firebase-config.js';
 
-import { auth, db } from '../firebase-config.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+// Sidebar
+const menuToggle = document.getElementById("menuToggle");
+const sidebar = document.getElementById("sidebar");
+const sidebarMenu = document.getElementById("sidebarMenu");
 
-document.addEventListener("DOMContentLoaded", () => {
+const departamentos = [
+  {nombre:"Direccion", url:"direccion.html"},
+  {nombre:"Economia", url:"economia.html"},
+  {nombre:"Produccion", url:"produccion.html"},
+  {nombre:"Comercial", url:"comercial.html"},
+  {nombre:"Recursos Humanos", url:"rrhh.html"}
+];
 
-  // ------------------- Elementos DOM -------------------
-  const menuToggle = document.getElementById("menuToggle");
-  const sidebar = document.getElementById("sidebar");
-  const sidebarMenu = document.getElementById("sidebarMenu");
-
-  // ------------------- Mostrar botón menú lateral -------------------
-  if (menuToggle) menuToggle.style.display = "block";
-
-  // ------------------- Menú lateral -------------------
-  const departamentos = [
-    { nombre: "Direccion", url: "direccion.html" },
-    { nombre: "Economia", url: "economia.html" },
-    { nombre: "Produccion", url: "produccion.html" },
-    { nombre: "Comercial", url: "comercial.html" },
-    { nombre: "Recursos Humanos", url: "rrhh.html" }
-  ];
-
-  function cargarMenuLateral() {
-    sidebarMenu.innerHTML = "";
-    departamentos.forEach(depto => {
-      const li = document.createElement("li");
-      li.textContent = depto.nombre;
-      li.addEventListener("click", () => {
-        window.location.href = depto.url;
-      });
-      sidebarMenu.appendChild(li);
+function cargarMenuLateral(){
+  sidebarMenu.innerHTML = "";
+  departamentos.forEach(depto => {
+    const li = document.createElement("li");
+    li.textContent = depto.nombre;
+    li.addEventListener("click", () => {
+      window.location.href = depto.url;
     });
-  }
-
-  if (menuToggle && sidebar) {
-    menuToggle.addEventListener("click", () => { 
-      sidebar.classList.toggle("show"); 
-    });
-  }
-
-  cargarMenuLateral();
-
-  // ------------------- Acordeones -------------------
-  const accordions = document.querySelectorAll('.accordion');
-  accordions.forEach(acc => {
-    const header = acc.querySelector('.accordion-header');
-    const content = acc.querySelector('.accordion-content');
-    if(header && content){
-      header.addEventListener('click', () => {
-        content.style.display = content.style.display === "block" ? "none" : "block";
-      });
-    }
+    sidebarMenu.appendChild(li);
   });
+}
 
-  // ------------------- Función para mostrar archivos -------------------
-  async function cargarArchivos(carpetaId, containerId){
-    const container = document.getElementById(containerId);
-    if(!container) return; // evita errores si no existe el contenedor
-    container.innerHTML = "";
+if(menuToggle && sidebar){
+  menuToggle.addEventListener("click", ()=>{ sidebar.classList.toggle("show"); });
+}
 
-    const snapshot = await getDocs(collection(db, "departamentos", "direccion", carpetaId));
-    snapshot.forEach(docItem => {
-      const data = docItem.data();
-      const archivoDiv = document.createElement("div");
-      archivoDiv.classList.add("archivoItem");
+cargarMenuLateral();
 
-      let botones = `
-        <button onclick="window.open('${data.url}','_blank')">Abrir</button>
-        <button onclick="descargarArchivo('${data.url}','${data.nombre}')">Descargar</button>
-      `;
-
-      // Si es admin o director
-      const email = auth.currentUser?.email;
-      if(email === "arquitecto@sestevez.com" || email === "administrador@sestevez.com"){
-        botones += `<button class="editarArchivo">Editar</button>`;
-      }
-
-      archivoDiv.innerHTML = `<span>${data.nombre}</span>${botones}`;
-      container.appendChild(archivoDiv);
-    });
-  }
-
-  // ------------------- Descargar archivo -------------------
-  window.descargarArchivo = (url, nombre) => {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = nombre;
-    a.click();
-  };
-
-  // ------------------- Botón de añadir archivo -------------------
-  const agregarBotones = document.querySelectorAll('.agregarArchivo');
-  agregarBotones.forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      alert("Aquí abrirías un modal para subir un archivo (pendiente implementar)");
-    });
-  });
-
-  // ------------------- Cargar archivos inicial -------------------
-  cargarArchivos("documentosEmpresa","documentosEmpresa");
-  cargarArchivos("otrosDocumentos","otrosDocumentos");
-
-});
-// Cargar archivos inicial
-cargarArchivos("documentosEmpresa","documentosEmpresa");
-cargarArchivos("actas","actas");           // <-- nueva línea
-cargarArchivos("otrosDocumentos","otrosDocumentos");
-// ------------------- Selector de archivos local -------------------
+// --------- Función para manejar archivos locales ----------
 const fileInput = document.createElement('input');
 fileInput.type = 'file';
 fileInput.style.display = 'none';
 document.body.appendChild(fileInput);
 
-// Función para agregar archivo a un contenedor específico
-function agregarArchivoLocal(containerId) {
+function agregarArchivo(containerId, carpetaDriveUrl){
   const container = document.getElementById(containerId);
-  if (!container) return;
+  if(!container) return;
 
   fileInput.onchange = () => {
-    if (fileInput.files.length > 0) {
-      const archivo = fileInput.files[0];
+    if(fileInput.files.length === 0) return;
 
-      // Crear elemento para mostrar archivo
-      const archivoDiv = document.createElement('div');
-      archivoDiv.classList.add('archivoItem');
+    const file = fileInput.files[0];
 
-      const span = document.createElement('span');
-      span.textContent = archivo.name;
+    // Crear div del archivo
+    const archivoDiv = document.createElement('div');
+    archivoDiv.classList.add('archivoItem');
 
-      // Botón abrir localmente (solo descarga temporal)
-      const abrirBtn = document.createElement('button');
-      abrirBtn.textContent = 'Abrir';
-      abrirBtn.onclick = () => {
-        const url = URL.createObjectURL(archivo);
-        window.open(url, '_blank');
-      };
+    const abrirBtn = document.createElement('button');
+    abrirBtn.textContent = "Abrir";
+    abrirBtn.onclick = () => {
+      window.open(URL.createObjectURL(file), "_blank");
+    };
 
-      // Botón "Descargar" (descarga inmediata)
-      const descargarBtn = document.createElement('button');
-      descargarBtn.textContent = 'Descargar';
-      descargarBtn.onclick = () => {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(archivo);
-        a.download = archivo.name;
-        a.click();
-      };
+    const descargarBtn = document.createElement('button');
+    descargarBtn.textContent = "Descargar";
+    descargarBtn.onclick = () => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(file);
+      a.download = file.name;
+      a.click();
+    };
 
-      archivoDiv.appendChild(span);
-      archivoDiv.appendChild(abrirBtn);
-      archivoDiv.appendChild(descargarBtn);
-      container.appendChild(archivoDiv);
+    archivoDiv.appendChild(document.createTextNode(file.name));
+    archivoDiv.appendChild(abrirBtn);
+    archivoDiv.appendChild(descargarBtn);
+
+    // Solo mostrar botón borrar si es usuario autorizado
+    const email = auth.currentUser?.email;
+    if(email === "arquitecto@sestevez.com" || email === "administrador@sestevez.com"){
+      const borrarBtn = document.createElement('button');
+      borrarBtn.textContent = "Borrar";
+      borrarBtn.onclick = () => { archivoDiv.remove(); };
+      archivoDiv.appendChild(borrarBtn);
     }
 
-    // Limpiar input para poder volver a seleccionar mismo archivo
-    fileInput.value = '';
+    container.appendChild(archivoDiv);
   };
 
   fileInput.click();
 }
 
-// ------------------- Botones + Agregar archivo -------------------
+// Botones "Agregar archivo"
 document.querySelectorAll('.agregarArchivo').forEach(btn => {
   btn.addEventListener('click', () => {
-    const container = btn.previousElementSibling.id; // contenedor correspondiente
-    agregarArchivoLocal(container);
+    const parent = btn.closest('.accordion-content');
+    const container = parent.querySelector('div');
+    agregarArchivo(container.id);
   });
 });

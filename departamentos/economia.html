@@ -1,22 +1,84 @@
-<div class="tarjeta">
-  <h4>Facturas Pagadas</h4>
-  <input type="file" id="fileInputPagadas">
-  <button onclick="subirArchivo('economia','pagadas')">Subir archivo</button>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Economía - Intranet Soluciones Estevéz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div class="tarjeta">
-  <h4>Facturas Recibidas</h4>
-  <input type="file" id="fileInputRecibidas">
-  <button onclick="subirArchivo('economia','recibidas')">Subir archivo</button>
-</div>
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="../style.css">
 
-<div class="tarjeta">
-  <h4>Nóminas</h4>
-  <input type="file" id="fileInputNominas">
-  <button onclick="subirArchivo('economia','nominas')">Subir archivo</button>
-</div>
+  <!-- Firebase y JS del departamento -->
+  <script type="module" src="../firebase-config.js"></script>
+  <script type="module" src="economia.js"></script>
+</head>
+<body>
 
-<div class="tarjeta">
-  <h4>Registro de Facturación</h4>
-  <button onclick="crearRegistroFactura()">Crear registro</button>
-</div>
+  <!-- Encabezado fijo -->
+  <header>
+    <button id="menuToggle">☰</button>
+    <h2>Economía</h2>
+  </header>
+
+  <!-- Menú lateral -->
+  <aside id="sidebar">
+    <ul id="sidebarMenu"></ul>
+  </aside>
+
+  <main>
+    <!-- Facturas Emitidas -->
+    <section class="tarjeta-departamento accordion">
+      <div class="accordion-header"><h3>Facturas Emitidas</h3></div>
+      <div class="accordion-content">
+        <div id="facturasEmitidas"></div>
+        <button class="agregarArchivo">+ Agregar archivo</button>
+      </div>
+    </section>
+
+    <!-- Facturas Recibidas -->
+    <section class="tarjeta-departamento accordion">
+      <div class="accordion-header"><h3>Facturas Recibidas</h3></div>
+      <div class="accordion-content">
+        <div id="facturasRecibidas"></div>
+        <button class="agregarArchivo">+ Agregar archivo</button>
+      </div>
+    </section>
+
+    <!-- Nóminas -->
+    <section class="tarjeta-departamento accordion">
+      <div class="accordion-header"><h3>Nóminas</h3></div>
+      <div class="accordion-content">
+        <div id="nominas"></div>
+        <button class="agregarArchivo">+ Agregar archivo</button>
+      </div>
+    </section>
+
+    <!-- Inventario -->
+    <section class="tarjeta-departamento accordion">
+      <div class="accordion-header"><h3>Inventario</h3></div>
+      <div class="accordion-content">
+        <div id="inventario"></div>
+        <button class="agregarArchivo">+ Agregar archivo</button>
+      </div>
+    </section>
+
+    <!-- Otros Documentos -->
+    <section class="tarjeta-departamento accordion">
+      <div class="accordion-header"><h3>Otros Documentos</h3></div>
+      <div class="accordion-content">
+        <div id="otrosDocumentos"></div>
+        <button class="agregarArchivo">+ Agregar archivo</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer fijo -->
+  <footer>
+    © 2026 Soluciones Estevéz S.U.R.L.
+  </footer>
+
+  <!-- Input oculto para seleccionar archivo -->
+  <input type="file" id="fileInput" style="display:none">
+</body>
+</html>

@@ -1,6 +1,4 @@
-import { auth, db, storage } from '../firebase-config.js';
-import { collection, getDocs, addDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+import { auth } from '../firebase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -55,47 +53,46 @@ document.addEventListener('DOMContentLoaded', () => {
     a.click();
   };
 
-  // ---------------- Función para cargar archivos desde Firestore ----------------
-  async function cargarArchivos(carpetaId, containerId){
+  // ---------------- Archivos desde Google Drive ----------------
+  // Rutas de carpetas en Drive (con enlaces públicos)
+  const archivosDrive = {
+    "documentosEmpresa": [
+      { nombre: "Manual de calidad.pdf", url: "https://drive.google.com/uc?export=download&id=TU_ID_1" },
+      { nombre: "Reglamento interno.pdf", url: "https://drive.google.com/uc?export=download&id=TU_ID_2" }
+    ],
+    "actas": [
+      { nombre: "Acta_2026_01.pdf", url: "https://drive.google.com/uc?export=download&id=TU_ID_3" }
+    ],
+    "otrosDocumentos": [
+      { nombre: "Formulario_solicitud.docx", url: "https://drive.google.com/uc?export=download&id=TU_ID_4" }
+    ]
+  };
+
+  function cargarArchivos(carpetaId, containerId){
     const container = document.getElementById(containerId);
     if(!container) return;
     container.innerHTML = "";
 
-    const snapshot = await getDocs(collection(db, "departamentos", "direccion", carpetaId));
-    snapshot.forEach(docItem => {
-      const data = docItem.data();
+    const archivos = archivosDrive[carpetaId] || [];
+    archivos.forEach(file => {
       const archivoDiv = document.createElement("div");
       archivoDiv.classList.add("archivoItem");
 
-      // Botones para todos
       let botones = `
-        <button onclick="window.open('${data.url}','_blank')">Abrir</button>
-        <button onclick="descargarArchivo('${data.url}','${data.nombre}')">Descargar</button>
+        <button onclick="window.open('${file.url}','_blank')">Abrir</button>
+        <button onclick="descargarArchivo('${file.url}','${file.nombre}')">Descargar</button>
       `;
 
-      // Solo admin o usuario autorizado puede borrar
+      // Botón Borrar solo como placeholder (no elimina Drive)
       const email = auth.currentUser?.email;
       if(email === "arquitecto@sestevez.com" || email === "administrador@sestevez.com"){
-        botones += `<button onclick="borrarArchivo('${carpetaId}','${docItem.id}','${data.nombre}')">Borrar</button>`;
+        botones += `<button onclick="alert('El borrado se realiza directamente en Google Drive')">Borrar</button>`;
       }
 
-      archivoDiv.innerHTML = `<span>${data.nombre}</span>${botones}`;
+      archivoDiv.innerHTML = `<span>${file.nombre}</span>${botones}`;
       container.appendChild(archivoDiv);
     });
   }
-
-  // ---------------- Borrar archivo ----------------
-  window.borrarArchivo = async (carpetaId, docId, nombreArchivo) => {
-    if(!confirm(`¿Eliminar ${nombreArchivo}?`)) return;
-    try {
-      await deleteDoc(doc(db, "departamentos", "direccion", carpetaId, docId));
-      const storageRef = ref(storage, `direccion/${carpetaId}/${nombreArchivo}`);
-      await deleteObject(storageRef);
-      cargarArchivos(carpetaId, carpetaId);
-    } catch(e) {
-      alert("Error al eliminar archivo: " + e.message);
-    }
-  };
 
   // ---------------- Botones de agregar archivo ----------------
   const agregarBotones = document.querySelectorAll('.agregarArchivo');
@@ -105,28 +102,19 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       fileInput.click();
 
-      fileInput.onchange = async () => {
+      fileInput.onchange = () => {
         if(fileInput.files.length === 0) return;
         const file = fileInput.files[0];
 
-        // Determinar carpeta según el índice del botón
+        // Determinar carpeta según índice
         let carpetaId;
         if(idx === 0) carpetaId = "documentosEmpresa";
         else if(idx === 1) carpetaId = "actas";
         else carpetaId = "otrosDocumentos";
 
-        // Subir archivo a Storage
-        const storageRef = ref(storage, `direccion/${carpetaId}/${file.name}`);
-        await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-
-        // Guardar metadatos en Firestore
-        await addDoc(collection(db, "departamentos", "direccion", carpetaId), {
-          nombre: file.name,
-          url
-        });
-
-        // Recargar archivos
+        // Solo agregamos visualmente; subida manual a Drive
+        const url = URL.createObjectURL(file);
+        archivosDrive[carpetaId].push({ nombre: file.name, url });
         cargarArchivos(carpetaId, carpetaId);
 
         // Limpiar input
@@ -140,4 +128,4 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarArchivos("actas","actas");
   cargarArchivos("otrosDocumentos","otrosDocumentos");
 
-}); 
+});

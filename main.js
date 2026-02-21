@@ -41,11 +41,12 @@ async function login() {
       "recursosh@sestevez.com": "RRHH",
       "comercial@sestevez.com": "Comercial"
     };
+
     const nombre = nombresBienvenida[email] || email.split("@")[0];
-    if(bienvenida) bienvenida.textContent =nombre;
+    if (bienvenida) bienvenida.textContent = nombre;
 
     // Mostrar menú lateral
-    if(menuToggle) menuToggle.style.display = "block";
+    if (menuToggle) menuToggle.style.display = "block";
 
     // Cargar menú lateral completo con enlaces
     cargarMenuLateral();
@@ -58,20 +59,20 @@ async function login() {
 document.querySelector("#loginDiv button").addEventListener("click", login);
 
 // ------------------- Menú lateral -------------------
-if(menuToggle && sidebar) {
+if (menuToggle && sidebar) {
   menuToggle.addEventListener("click", () => {
     sidebar.classList.toggle("show");
   });
 }
 
-function cargarMenuLateral(){
+function cargarMenuLateral() {
   const departamentos = [
-    {nombre:"Direccion", url:"departamentos/direccion.html"},
-    {nombre:"Economia", url:"departamentos/economia.html"},
-    {nombre:"Produccion", url:"departamentos/produccion.html"},
-    {nombre:"Comercial", url:"departamentos/comercial.html"},
-    {nombre:"Recursos Humanos", url:"departamentos/rrhh.html"}
-];
+    { nombre: "Direccion", url: "/departamentos/direccion.html" },
+    { nombre: "Economia", url: "/departamentos/economia.html" },
+    { nombre: "Produccion", url: "/departamentos/produccion.html" },
+    { nombre: "Comercial", url: "/departamentos/comercial.html" },
+    { nombre: "Recursos Humanos", url: "/departamentos/rrhh.html" }
+  ];
 
   sidebarMenu.innerHTML = "";
 
